@@ -1,11 +1,10 @@
-const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 require('dotenv').config();
 
 const client = new Client({
     intents: [
         GatewayIntentBits.DirectMessages,
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildBans,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent
     ],
@@ -22,7 +21,8 @@ client.on('messageCreate', async (message) => {
         console.log("受信2")
         const userAvatarURL = message.author.avatarURL();
         const currentTime = new Date();
-        const exampleEmbed = new EmbedBuilder()
+        const attachment1 = new AttachmentBuilder('./img/1.png', { name: '1.png' });
+        const embed = new EmbedBuilder()
             .setColor(0x0099FF)
             .setTitle('バトル開始！')
             .setAuthor({ name: 'Some name', iconURL: userAvatarURL })
@@ -31,12 +31,17 @@ client.on('messageCreate', async (message) => {
                 { name: 'Inline field title', value: 'Some value here', inline: true },
                 { name: 'Inline field title', value: 'Some value here', inline: true },
             )
-            .setImage('https://i.imgur.com/AfFp7pu.png')
+            .setImage(`attachment://${attachment1.name}`)
             .setTimestamp()
-            .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` });
-
-        message.channel.send({ embeds: [exampleEmbed] });
+            .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` })
+        const sentMessage = await message.channel.send({ files: [attachment1], embeds: [embed] });
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        const attachment2 = new AttachmentBuilder('./img/2.png', { name: '2.png' });
+        embed
+            .setImage(`attachment://${attachment2.name}`)
+            .setTimestamp()
+            .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` })
+        await sentMessage.edit({ files: [attachment2], embeds: [embed] });
     }
 });
-
 client.login(process.env.TOKEN);

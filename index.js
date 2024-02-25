@@ -18,7 +18,6 @@ client.on('ready', () => {
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
     if (message.content.includes(`${prefix}battle`)) {
-        console.log("受信2")
         const userAvatarURL = message.author.avatarURL();
         const currentTime = new Date();
         const attachment1 = new AttachmentBuilder('./img/1.png', { name: '1.png' });

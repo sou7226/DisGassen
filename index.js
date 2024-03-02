@@ -6,9 +6,9 @@ const path = require('path');
 require('dotenv').config();
 const mapWidth = 300; // マップの幅
 const mapHeight = 200; // マップの高さ
-const tilePath = './img/rock_tail1.png'; // タイルのパス
+const tilePath = './img/tails/rock_tail1.png'; // タイルのパス
 const playerPath = './img/red_pin.png'; // プレイヤーのパス
-const playerPosition = { x: 50, y: 50 }; // プレイヤーの初期位置（適宜調整）
+const playerPosition = { x: 20, y: 40 }; // プレイヤーの初期位置（適宜調整）
 const TILE_SIZE = 20;
 const PLAYER_SIZE = 20;
 const prisma = new PrismaClient();
@@ -30,28 +30,28 @@ async function resizeImage(imagePath, width, height) {
     return canvas.toBuffer();
 }
 
-// マップを生成する関数を修正して、リサイズされたタイルとプレイヤー画像を使用
 async function generateMap() {
     const canvas = createCanvas(mapWidth, mapHeight);
     const ctx = canvas.getContext('2d');
 
-    // 地面のタイルとプレイヤーの画像をリサイズ
-    const tileBuffer = await resizeImage(tilePath, TILE_SIZE, TILE_SIZE); // TILE_SIZEはタイルの新しいサイズ
-    const playerBuffer = await resizeImage(playerPath, PLAYER_SIZE, PLAYER_SIZE); // PLAYER_SIZEはプレイヤー画像の新しいサイズ
-
-    const tileImage = await loadImage(tileBuffer);
-    const playerImage = await loadImage(playerBuffer);
+    // 地面のタイルを読み込み
+    const tileImage = await loadImage(tilePath);
+    // プレイヤーの画像を読み込み
+    const playerImage = await loadImage(playerPath);
 
     // 地面のタイルをキャンバスに敷き詰める
     for (let y = 0; y < mapHeight; y += TILE_SIZE) {
         for (let x = 0; x < mapWidth; x += TILE_SIZE) {
-            ctx.drawImage(tileImage, x, y, TILE_SIZE, TILE_SIZE);
+            // プレイヤーの座標が現在のタイルに重なっているかチェック
+            if (x === playerPosition.x && y === playerPosition.y) {
+                // プレイヤーの画像を描画
+                ctx.drawImage(playerImage, x, y, PLAYER_SIZE, PLAYER_SIZE);
+            } else {
+                // 地面のタイルを描画
+                ctx.drawImage(tileImage, x, y, TILE_SIZE, TILE_SIZE);
+            }
         }
     }
-
-    // プレイヤーの画像を指定された位置に描画
-    ctx.drawImage(playerImage, playerPosition.x, playerPosition.y, PLAYER_SIZE, PLAYER_SIZE);
-
     // キャンバスからバッファを生成し、そのバッファをもとにAttachmentを作成
     const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'map.png' });
 
@@ -130,7 +130,6 @@ async function handleBattleCommand(message) {
             .setImage(`attachment://${attachment.name}`)
             .setTimestamp(currentTime)
             .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` });
-
         const sentMessage = await message.channel.send({ files: [attachment], embeds: [embed] });
         await new Promise(resolve => setTimeout(resolve, 2000));
     }

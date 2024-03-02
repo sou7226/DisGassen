@@ -16,5 +16,10 @@ model User {
   id String @id
   coin Int @default(0)
 }
+model terrain {
+  id String @id
+  layer Int @default(1)
+  burrow String @default(40000000000000000000000000000000000000)
+}
 
 

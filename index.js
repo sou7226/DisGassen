@@ -10,7 +10,6 @@ const mapWidth = 300; // マップの幅
 const mapHeight = 200; // マップの高さ
 const tilePath = './img/tails/rock_tail1.png'; // タイルのパス
 const hallPath = './img/tails/black.png'; // タイルのパス
-const playerPath = './img/red_pin.png'; // プレイヤーのパス
 const TILE_SIZE = 20;
 const prisma = new PrismaClient();
 const client = new Client({
@@ -22,26 +21,13 @@ const client = new Client({
     ],
 });
 let playerPosition = { x: 6, y: 0 }; // プレイヤーの初期位置（適宜調整）
-// 画像を指定されたサイズにリサイズする関数
-async function resizeImage(imagePath, width, height) {
-    const canvas = createCanvas(width, height);
-    const ctx = canvas.getContext('2d');
-    const image = await loadImage(imagePath);
-    // 指定されたサイズで画像をキャンバスに描画（リサイズ）
-    ctx.drawImage(image, 0, 0, width, height);
-    return canvas.toBuffer();
-}
 async function generateMap(message) {
     const canvas = createCanvas(mapWidth, mapHeight);
     const ctx = canvas.getContext('2d');
-
-    // 地面のタイルを読み込み
     const tileImage = await loadImage(tilePath);
     const hallImage = await loadImage(hallPath);
     const avatarUrl = message.author.displayAvatarURL({ format: 'png', size: 1024 });
     const playerImage = await loadImage(avatarUrl);
-    const player_x = playerPosition.x * 20
-    const player_y = playerPosition.y * 20
     const terrain = await prisma.terrain.findMany({
         where: { user_id: message.author.id },
     })
@@ -53,9 +39,15 @@ async function generateMap(message) {
             }
         }
     }
-    ctx.drawImage(playerImage, player_x, player_y, TILE_SIZE, TILE_SIZE);
+    const user = await prisma.user.findUnique({
+        where: { id: message.author.id },
+    })
+    if (user) {
+        playerPosition.x = user.x;
+        playerPosition.y = user.y;
+    }
+    ctx.drawImage(playerImage, playerPosition.x * 20, playerPosition.y * 20, TILE_SIZE, TILE_SIZE);
     const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'map.png' });
-
     return attachment;
 }
 function binToHex(bin) {
@@ -79,7 +71,6 @@ function hexToBin(hexString, space = null) {
     }
     return binaryString;
 }
-
 const prefix = process.env.PREFIX;
 async function getRandomImage(directory) {
     try {
@@ -96,7 +87,6 @@ async function getRandomImage(directory) {
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
-
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
     const user = await prisma.user.findUnique({
@@ -174,6 +164,7 @@ client.on('messageCreate', async (message) => {
         message.channel.send({ files: [mapAttachment], components: [row] });
     }
 });
+
 client.on('interactionCreate', async interaction => {
     // インタラクションがボタンクリックでなければ処理をスキップ
     if (!interaction.isButton()) return;
@@ -182,18 +173,34 @@ client.on('interactionCreate', async interaction => {
     switch (interaction.customId) {
         case 'up':
             playerPosition.y--;
+            await prisma.user.update({
+                where: { id: interaction.user.id },
+                data: { y: playerPosition.y }
+            })
             await interaction.reply('上に移動しました！');
             break;
         case 'down':
             playerPosition.y++;
+            await prisma.user.update({
+                where: { id: interaction.user.id },
+                data: { y: playerPosition.y }
+            })
             await interaction.reply('下に移動しました！');
             break;
         case 'left':
             playerPosition.x--;
+            await prisma.user.update({
+                where: { id: interaction.user.id },
+                data: { y: playerPosition.x }
+            })
             await interaction.reply('左に移動しました！');
             break;
         case 'right':
             playerPosition.x++;
+            await prisma.user.update({
+                where: { id: interaction.user.id },
+                data: { y: playerPosition.x }
+            })
             await interaction.reply('右に移動しました！');
             break;
         default:

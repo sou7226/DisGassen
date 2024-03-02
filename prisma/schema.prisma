@@ -15,11 +15,16 @@ datasource db {
 model User {
   id String @id
   coin Int @default(0)
+  layer Int @default(1)
+  x Int @default(6)
+  y Int @default(0)
 }
 model terrain {
-  id String @id
+  id Int @id @default(autoincrement())
+  user_id String
   layer Int @default(1)
-  burrow String @default(40000000000000000000000000000000000000)
+  x Int
+  y Int
 }
 
 

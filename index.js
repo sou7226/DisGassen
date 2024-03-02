@@ -9,10 +9,9 @@ require('dotenv').config();
 const mapWidth = 300; // マップの幅
 const mapHeight = 200; // マップの高さ
 const tilePath = './img/tails/rock_tail1.png'; // タイルのパス
+const hallPath = './img/tails/black.png'; // タイルのパス
 const playerPath = './img/red_pin.png'; // プレイヤーのパス
-const playerPosition = { x: 20, y: 40 }; // プレイヤーの初期位置（適宜調整）
 const TILE_SIZE = 20;
-const PLAYER_SIZE = 20;
 const prisma = new PrismaClient();
 const client = new Client({
     intents: [
@@ -22,6 +21,7 @@ const client = new Client({
         GatewayIntentBits.MessageContent
     ],
 });
+let playerPosition = { x: 6, y: 0 }; // プレイヤーの初期位置（適宜調整）
 // 画像を指定されたサイズにリサイズする関数
 async function resizeImage(imagePath, width, height) {
     const canvas = createCanvas(width, height);
@@ -37,23 +37,23 @@ async function generateMap(message) {
 
     // 地面のタイルを読み込み
     const tileImage = await loadImage(tilePath);
+    const hallImage = await loadImage(hallPath);
     const avatarUrl = message.author.displayAvatarURL({ format: 'png', size: 1024 });
     const playerImage = await loadImage(avatarUrl);
-
-    // 地面のタイルをキャンバスに敷き詰める
+    const player_x = playerPosition.x * 20
+    const player_y = playerPosition.y * 20
+    const terrain = await prisma.terrain.findMany({
+        where: { user_id: message.author.id },
+    })
     for (let y = 0; y < mapHeight; y += TILE_SIZE) {
         for (let x = 0; x < mapWidth; x += TILE_SIZE) {
-            // プレイヤーの座標が現在のタイルに重なっているかチェック
-            if (x === playerPosition.x && y === playerPosition.y) {
-                // プレイヤーの画像を描画
-                ctx.drawImage(playerImage, x, y, PLAYER_SIZE, PLAYER_SIZE);
-            } else {
-                // 地面のタイルを描画
-                ctx.drawImage(tileImage, x, y, TILE_SIZE, TILE_SIZE);
+            ctx.drawImage(tileImage, x, y, TILE_SIZE, TILE_SIZE);
+            for (let i = 0; i < terrain.length; i++) {
+                ctx.drawImage(hallImage, terrain[i].x * 20, terrain[i].y * 20, TILE_SIZE, TILE_SIZE);
             }
         }
     }
-    // キャンバスからバッファを生成し、そのバッファをもとにAttachmentを作成
+    ctx.drawImage(playerImage, player_x, player_y, TILE_SIZE, TILE_SIZE);
     const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'map.png' });
 
     return attachment;
@@ -70,12 +70,14 @@ function reverseBinary(binaryString) {
     const reversedBinary = binaryString.split('').map(bit => bit === '0' ? '1' : '0').join('');
     return reversedBinary;
 }
-function hexToBin(hexString, space) {
+function hexToBin(hexString, space = null) {
     // 16進数を2進数に変換
     const binaryString = parseInt(hexString, 16).toString(2);
-    // 指定された桁数の位置に一度だけスペースを挿入
-    const formattedBinary = binaryString.substring(0, space) + " " + binaryString.substring(space);
-    return formattedBinary;
+    if (space) {
+        const formattedBinary = binaryString.substring(0, space) + " " + binaryString.substring(space);
+        return formattedBinary;
+    }
+    return binaryString;
 }
 
 const prefix = process.env.PREFIX;
@@ -135,6 +137,15 @@ client.on('messageCreate', async (message) => {
         }
     } else if (command === 'battle') {
         await handleBattleCommand(message);
+    } else if (command === 'dig') {
+        await prisma.terrain.create({
+            data: {
+                user_id: message.author.id,
+                x: playerPosition.x,
+                y: playerPosition.y
+            }
+        })
+        message.channel.send("掘りました！");
     } else if (command === 'map') {
         const mapAttachment = await generateMap(message);
 
@@ -170,15 +181,19 @@ client.on('interactionCreate', async interaction => {
     // ボタンのカスタムIDに応じて条件分岐
     switch (interaction.customId) {
         case 'up':
+            playerPosition.y--;
             await interaction.reply('上に移動しました！');
             break;
         case 'down':
+            playerPosition.y++;
             await interaction.reply('下に移動しました！');
             break;
         case 'left':
+            playerPosition.x--;
             await interaction.reply('左に移動しました！');
             break;
         case 'right':
+            playerPosition.x++;
             await interaction.reply('右に移動しました！');
             break;
         default:

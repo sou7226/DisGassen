@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE `User` (
+CREATE TABLE `user` (
     `id` VARCHAR(191) NOT NULL,
     `coin` INTEGER NOT NULL DEFAULT 0,
     `layer` INTEGER NOT NULL DEFAULT 1,

@@ -31,6 +31,9 @@ let battle = {
         speed: null 
     }
 }
+battle.player.hp = 100
+battle.player.power = 30
+battle.player.speed = 40
 let playerPosition = { x: 6, y: 0 }; // プレイヤーの初期位置（適宜調整）
 async function generateMap(message) {
     const canvas = createCanvas(mapWidth, mapHeight);
@@ -220,30 +223,33 @@ client.on('interactionCreate', async interaction => {
     }
 });
 async function handleBattleCommand(message) {
-    if(message.content == "wwatk"){
-        if(!battle.monster.hp){
-            battle.monster.hp = 50
-            battle.player.hp = 100
-            battle.monster.power = 10
-            battle.player.power = 30
-            await spawnMonster(battle)
-        }else if(battle.monster.hp >= 0 || battle.player.hp >= 0){
-            keepFighting(battle)
-        }else if(battle.player.hp <= 0){
-    
-        }else if(battle.monster.hp <= 0){
-    
-        }
+    if(!battle.monster.hp){
+        battle.monster.hp = 50
+        battle.monster.power = 10
+        battle.monster.speed = 30
+        await spawnMonster(message, battle)
+    }else if(battle.monster.hp >= 0){
+        keepFighting(message, battle)
+    }else if(battle.player.hp <= 0){
+        message.channel.send("あなたはもうやられている！")
+
+    }else if(battle.monster.hp <= 0){
+        message.channel.send("勝利")
+        battle.monster.hp = null
+        battle.monster.power = null
+        battle.monster.speed = null
+
     }
+    
 }
-async function spawnMonster(battle){
+async function spawnMonster(message, battle){
     const userAvatarURL = message.author.avatarURL();
     const currentTime = new Date();
     const randomImagePath = await getRandomImage('./img/monsters');
     const attachment = new AttachmentBuilder(randomImagePath, { name: path.basename(randomImagePath) });
     const embed = new EmbedBuilder()
         .setColor(0x0099FF)
-        .setTitle(`バトル開始！ - Round ${i}`)
+        .setTitle(`バトル開始！ - Round 1`)
         .setAuthor({ name: message.author.username, iconURL: userAvatarURL })
         .setDescription(`モンスターのHP:${battle.monster.hp}\n攻撃力:${battle.monster.power}`)
         .setImage(`attachment://${attachment.name}`)
@@ -251,8 +257,33 @@ async function spawnMonster(battle){
         .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` });
     const sentMessage = await message.channel.send({ files: [attachment], embeds: [embed] });
 }
-function keepFighting(battle){
-    battle.monster.hp - battle.player.power
-}
+function keepFighting(message, battle){
+    if (battle.player.speed > battle.monster.speed){
+        playerAttackProcess(message, battle)
+        monstetrAttackProcess(message, battle)
 
+    }else if (battle.player.speed < battle.monster.speed){
+        monstetrAttackProcess(message, battle)
+        playerAttackProcess(message, battle)
+    }else{
+        switch(~~(2 * Math.random())) {
+            case 0: 
+                playerAttackProcess(message, battle)
+                monstetrAttackProcess(message, battle)
+            break;
+            case 1:
+                monstetrAttackProcess(message, battle)
+                playerAttackProcess(message, battle)
+            break;
+        }
+    }
+}
+function playerAttackProcess(message, battle){
+    battle.monster.hp = battle.monster.hp - battle.player.power
+    message.channel.send(`プレイヤーの攻撃！\nモンスターに${battle.player.power}のダメージ！\nモンスターの残りHP:${battle.monster.hp < 0? 0:battle.monster.hp}`)
+}
+function monstetrAttackProcess(message, battle){
+    battle.player.hp = battle.player.hp - battle.monster.power
+    message.channel.send(`モンスターの攻撃！\nプレイヤーに${battle.monster.power}のダメージ！\nプレイヤーの残りHP:${battle.player.hp < 0? 0:battle.player.hp}`)
+}
 client.login(process.env.TOKEN);

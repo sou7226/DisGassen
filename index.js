@@ -19,6 +19,7 @@ const client = new Client({
         GatewayIntentBits.MessageContent
     ],
 });
+let mapMessage, controllButton;
 let battle = {
     monster: {
         hp:null,
@@ -31,19 +32,31 @@ let battle = {
         speed: null 
     }
 }
+let friend = {
+    hp:null,
+    power:null,
+    speed: null 
+}
+let player = {
+    id : null,
+    avaterURL: null
+}
 battle.player.hp = 100
 battle.player.power = 30
 battle.player.speed = 40
+friend.hp = 100
+friend.power = 30
+friend.speed = 40
 let playerPosition = { x: 6, y: 0 }; // プレイヤーの初期位置（適宜調整）
-async function generateMap(message) {
+async function generateMap(player) {
     const canvas = createCanvas(mapWidth, mapHeight);
     const ctx = canvas.getContext('2d');
     const tileImage = await loadImage(tilePath);
     const hallImage = await loadImage(hallPath);
-    const avatarUrl = message.author.displayAvatarURL({ format: 'png', size: 1024 });
+    const avatarUrl = player.avaterURL
     const playerImage = await loadImage(avatarUrl);
     const terrain = await prisma.terrain.findMany({
-        where: { user_id: message.author.id },
+        where: { user_id: player.id },
     })
     for (let y = 0; y < mapHeight; y += TILE_SIZE) {
         for (let x = 0; x < mapWidth; x += TILE_SIZE) {
@@ -54,7 +67,7 @@ async function generateMap(message) {
         }
     }
     const user = await prisma.user.findUnique({
-        where: { id: message.author.id },
+        where: { id: player.id },
     })
     if (user) {
         playerPosition.x = user.x;
@@ -141,6 +154,10 @@ client.on('messageCreate', async (message) => {
         }
     } else if (command === 'battle') {
         await handleBattleCommand(message);
+    } else if (command === 'st') {
+        await BattleStatus(message);
+    } else if (command === 'tag') {
+        await BattleTag(message);
     } else if (command === 'dig') {
         await prisma.terrain.create({
             data: {
@@ -151,10 +168,12 @@ client.on('messageCreate', async (message) => {
         })
         message.channel.send("掘りました！");
     } else if (command === 'map') {
-        const mapAttachment = await generateMap(message);
+        player.id = message.author.id
+        player.avaterURL = message.author.displayAvatarURL({ format: 'png', size: 1024 })
+        const mapAttachment = await generateMap(player);
 
         // ボタンを作成
-        const row = new ActionRowBuilder()
+        controllButton = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
                     .setCustomId('up')
@@ -175,7 +194,7 @@ client.on('messageCreate', async (message) => {
             );
 
         // メッセージとボタンを送信
-        message.channel.send({ files: [mapAttachment], components: [row] });
+        mapMessage = await message.channel.send({ files: [mapAttachment], components: [controllButton] });
     }
 });
 
@@ -183,7 +202,7 @@ client.on('interactionCreate', async interaction => {
     // インタラクションがボタンクリックでなければ処理をスキップ
     if (!interaction.isButton()) return;
 
-    // ボタンのカスタムIDに応じて条件分岐
+    let mapAttachment;
     switch (interaction.customId) {
         case 'up':
             playerPosition.y--;
@@ -191,7 +210,16 @@ client.on('interactionCreate', async interaction => {
                 where: { id: interaction.user.id },
                 data: { y: playerPosition.y }
             })
-            await interaction.reply('上に移動しました！');
+            mapAttachment = await generateMap(player);
+            mapMessage.edit({files: [mapAttachment]})
+            await interaction.reply({ content: '上に移動しました！', fetchReply: true })
+            .then(sentMessage => {
+                // 2秒後に返信を削除
+                setTimeout(() => {
+                interaction.deleteReply().catch(console.error);
+                }, 2000);
+            })
+            .catch(console.error);
             break;
         case 'down':
             playerPosition.y++;
@@ -199,29 +227,62 @@ client.on('interactionCreate', async interaction => {
                 where: { id: interaction.user.id },
                 data: { y: playerPosition.y }
             })
-            await interaction.reply('下に移動しました！');
+            mapAttachment = await generateMap(player);
+            mapMessage.edit({files: [mapAttachment]})
+            await interaction.reply({ content: '下に移動しました！', fetchReply: true })
+            .then(sentMessage => {
+                // 2秒後に返信を削除
+                setTimeout(() => {
+                interaction.deleteReply().catch(console.error);
+                }, 2000);
+            })
+            .catch(console.error);
             break;
         case 'left':
             playerPosition.x--;
             await prisma.user.update({
                 where: { id: interaction.user.id },
-                data: { y: playerPosition.x }
+                data: { x: playerPosition.x }
             })
-            await interaction.reply('左に移動しました！');
+            mapAttachment = await generateMap(player);
+            mapMessage.edit({files: [mapAttachment]})
+            await interaction.reply({ content: '左に移動しました！', fetchReply: true })
+            .then(sentMessage => {
+                // 2秒後に返信を削除
+                setTimeout(() => {
+                interaction.deleteReply().catch(console.error);
+                }, 2000);
+            })
+            .catch(console.error);
             break;
         case 'right':
             playerPosition.x++;
             await prisma.user.update({
                 where: { id: interaction.user.id },
-                data: { y: playerPosition.x }
+                data: { x: playerPosition.x }
             })
-            await interaction.reply('右に移動しました！');
+            mapAttachment = await generateMap(player);
+            mapMessage.edit({files: [mapAttachment]})
+            await interaction.reply({ content: '右に移動しました！', fetchReply: true })
+            .then(sentMessage => {
+                // 2秒後に返信を削除
+                setTimeout(() => {
+                interaction.deleteReply().catch(console.error);
+                }, 2000);
+            })
+            .catch(console.error);
             break;
         default:
             await interaction.reply('不明な操作です。');
             break;
     }
 });
+async function BattleStatus(message){
+
+}
+async function BattleTag(message){
+
+}
 async function handleBattleCommand(message) {
     if(!battle.monster.hp){
         battle.monster.hp = 50

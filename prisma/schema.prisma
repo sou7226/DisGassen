@@ -15,6 +15,7 @@ datasource db {
 model user {
   id String @id
   coin Int @default(0)
+  exp Int @default(0)
   layer Int @default(1)
   x Int @default(6)
   y Int @default(0)
@@ -22,6 +23,14 @@ model user {
 model terrain {
   id Int @id @default(autoincrement())
   user_id String
+  layer Int @default(1)
+  x Int
+  y Int
+}
+model monster{
+  id Int @id @default(autoincrement())
+  user_id String
+  level Int @default(1)
   layer Int @default(1)
   x Int
   y Int

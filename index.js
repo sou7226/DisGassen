@@ -1,5 +1,4 @@
 const { Client, GatewayIntentBits, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-
 const { createCanvas, loadImage } = require('canvas');
 const { PrismaClient } = require('@prisma/client');
 const fs = require('fs').promises;
@@ -22,11 +21,13 @@ const client = new Client({
 let mapMessage, controllButton;
 let battle = {
     monster: {
+        level:null,
         hp:null,
         power:null,
         speed: null
     },
     player:{
+        level:null,
         hp:null,
         power:null,
         speed: null 
@@ -156,6 +157,8 @@ client.on('messageCreate', async (message) => {
         await handleBattleCommand(message);
     } else if (command === 'st') {
         await BattleStatus(message);
+    } else if (command === 'pinfo') {
+        await playerStatus(message);
     } else if (command === 'tag') {
         await BattleTag(message);
     } else if (command === 'dig') {
@@ -277,6 +280,10 @@ client.on('interactionCreate', async interaction => {
             break;
     }
 });
+async function playerStatus(message){
+
+
+}
 async function BattleStatus(message){
 
 }
@@ -295,11 +302,26 @@ async function handleBattleCommand(message) {
         message.channel.send("あなたはもうやられている！")
 
     }else if(battle.monster.hp <= 0){
-        message.channel.send("勝利")
         battle.monster.hp = null
         battle.monster.power = null
         battle.monster.speed = null
-
+        const user = await prisma.user.findUnique({
+            where: { id: message.author.id },
+        })
+        if(user){
+            await prisma.user.update({
+                where: { id: interaction.user.id },
+                data: { exp: user.exp + battle.monster.level }
+            })
+        } else {
+            await prisma.user.create({
+                data: { 
+                    id: message.author.id,
+                    exp: battle.monster.level
+                }
+            })
+        }
+        message.channel.send("勝利")
     }
     
 }

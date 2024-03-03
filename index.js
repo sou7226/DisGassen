@@ -21,25 +21,25 @@ const client = new Client({
 let mapMessage, controllButton;
 let battle = {
     monster: {
-        level:null,
-        hp:null,
-        power:null,
+        level: null,
+        hp: null,
+        power: null,
         speed: null
     },
-    player:{
-        level:null,
-        hp:null,
-        power:null,
-        speed: null 
+    player: {
+        level: null,
+        hp: null,
+        power: null,
+        speed: null
     }
 }
 let friend = {
-    hp:null,
-    power:null,
-    speed: null 
+    hp: null,
+    power: null,
+    speed: null
 }
 let player = {
-    id : null,
+    id: null,
     avaterURL: null
 }
 battle.player.hp = 100
@@ -214,15 +214,15 @@ client.on('interactionCreate', async interaction => {
                 data: { y: playerPosition.y }
             })
             mapAttachment = await generateMap(player);
-            mapMessage.edit({files: [mapAttachment]})
+            mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '上に移動しました！', fetchReply: true })
-            .then(sentMessage => {
-                // 2秒後に返信を削除
-                setTimeout(() => {
-                interaction.deleteReply().catch(console.error);
-                }, 2000);
-            })
-            .catch(console.error);
+                .then(sentMessage => {
+                    // 2秒後に返信を削除
+                    setTimeout(() => {
+                        interaction.deleteReply().catch(console.error);
+                    }, 2000);
+                })
+                .catch(console.error);
             break;
         case 'down':
             playerPosition.y++;
@@ -231,15 +231,15 @@ client.on('interactionCreate', async interaction => {
                 data: { y: playerPosition.y }
             })
             mapAttachment = await generateMap(player);
-            mapMessage.edit({files: [mapAttachment]})
+            mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '下に移動しました！', fetchReply: true })
-            .then(sentMessage => {
-                // 2秒後に返信を削除
-                setTimeout(() => {
-                interaction.deleteReply().catch(console.error);
-                }, 2000);
-            })
-            .catch(console.error);
+                .then(sentMessage => {
+                    // 2秒後に返信を削除
+                    setTimeout(() => {
+                        interaction.deleteReply().catch(console.error);
+                    }, 2000);
+                })
+                .catch(console.error);
             break;
         case 'left':
             playerPosition.x--;
@@ -248,15 +248,15 @@ client.on('interactionCreate', async interaction => {
                 data: { x: playerPosition.x }
             })
             mapAttachment = await generateMap(player);
-            mapMessage.edit({files: [mapAttachment]})
+            mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '左に移動しました！', fetchReply: true })
-            .then(sentMessage => {
-                // 2秒後に返信を削除
-                setTimeout(() => {
-                interaction.deleteReply().catch(console.error);
-                }, 2000);
-            })
-            .catch(console.error);
+                .then(sentMessage => {
+                    // 2秒後に返信を削除
+                    setTimeout(() => {
+                        interaction.deleteReply().catch(console.error);
+                    }, 2000);
+                })
+                .catch(console.error);
             break;
         case 'right':
             playerPosition.x++;
@@ -265,57 +265,69 @@ client.on('interactionCreate', async interaction => {
                 data: { x: playerPosition.x }
             })
             mapAttachment = await generateMap(player);
-            mapMessage.edit({files: [mapAttachment]})
+            mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '右に移動しました！', fetchReply: true })
-            .then(sentMessage => {
-                // 2秒後に返信を削除
-                setTimeout(() => {
-                interaction.deleteReply().catch(console.error);
-                }, 2000);
-            })
-            .catch(console.error);
+                .then(sentMessage => {
+                    // 2秒後に返信を削除
+                    setTimeout(() => {
+                        interaction.deleteReply().catch(console.error);
+                    }, 2000);
+                })
+                .catch(console.error);
             break;
         default:
             await interaction.reply('不明な操作です。');
             break;
     }
 });
-async function playerStatus(message){
+async function playerStatus(message) {
+    const user = await prisma.user.findUnique({
+        where: { id: message.author.id },
+    })
+    if (user) {
+        const content = `所持金:${user.coin}\n現在の階層${user.layer}\n経験値:${user.exp}`
+        message.channel.send(content)
+    } else {
+        await prisma.user.create({
+            data: { id: message.author.id }
+        })
+    }
 
 
 }
-async function BattleStatus(message){
+async function BattleStatus(message) {
 
 }
-async function BattleTag(message){
+async function BattleTag(message) {
 
 }
 async function handleBattleCommand(message) {
-    if(!battle.monster.hp){
+    if (!battle.monster.hp) {
+        battle.monster.level = 1
         battle.monster.hp = 50
         battle.monster.power = 10
         battle.monster.speed = 30
         await spawnMonster(message, battle)
-    }else if(battle.monster.hp >= 0){
+    } else if (battle.monster.hp >= 0) {
         keepFighting(message, battle)
-    }else if(battle.player.hp <= 0){
+    } else if (battle.player.hp <= 0) {
         message.channel.send("あなたはもうやられている！")
 
-    }else if(battle.monster.hp <= 0){
+    } else if (battle.monster.hp <= 0) {
         battle.monster.hp = null
         battle.monster.power = null
         battle.monster.speed = null
         const user = await prisma.user.findUnique({
             where: { id: message.author.id },
         })
-        if(user){
+        if (user) {
             await prisma.user.update({
-                where: { id: interaction.user.id },
+                where: { id: message.author.id },
                 data: { exp: user.exp + battle.monster.level }
             })
         } else {
             await prisma.user.create({
-                data: { 
+                data: {
                     id: message.author.id,
                     exp: battle.monster.level
                 }
@@ -323,9 +335,9 @@ async function handleBattleCommand(message) {
         }
         message.channel.send("勝利")
     }
-    
+
 }
-async function spawnMonster(message, battle){
+async function spawnMonster(message, battle) {
     const userAvatarURL = message.author.avatarURL();
     const currentTime = new Date();
     const randomImagePath = await getRandomImage('./img/monsters');
@@ -340,33 +352,33 @@ async function spawnMonster(message, battle){
         .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` });
     const sentMessage = await message.channel.send({ files: [attachment], embeds: [embed] });
 }
-function keepFighting(message, battle){
-    if (battle.player.speed > battle.monster.speed){
+function keepFighting(message, battle) {
+    if (battle.player.speed > battle.monster.speed) {
         playerAttackProcess(message, battle)
         monstetrAttackProcess(message, battle)
 
-    }else if (battle.player.speed < battle.monster.speed){
+    } else if (battle.player.speed < battle.monster.speed) {
         monstetrAttackProcess(message, battle)
         playerAttackProcess(message, battle)
-    }else{
-        switch(~~(2 * Math.random())) {
-            case 0: 
+    } else {
+        switch (~~(2 * Math.random())) {
+            case 0:
                 playerAttackProcess(message, battle)
                 monstetrAttackProcess(message, battle)
-            break;
+                break;
             case 1:
                 monstetrAttackProcess(message, battle)
                 playerAttackProcess(message, battle)
-            break;
+                break;
         }
     }
 }
-function playerAttackProcess(message, battle){
+function playerAttackProcess(message, battle) {
     battle.monster.hp = battle.monster.hp - battle.player.power
-    message.channel.send(`プレイヤーの攻撃！\nモンスターに${battle.player.power}のダメージ！\nモンスターの残りHP:${battle.monster.hp < 0? 0:battle.monster.hp}`)
+    message.channel.send(`プレイヤーの攻撃！\nモンスターに${battle.player.power}のダメージ！\nモンスターの残りHP:${battle.monster.hp < 0 ? 0 : battle.monster.hp}`)
 }
-function monstetrAttackProcess(message, battle){
+function monstetrAttackProcess(message, battle) {
     battle.player.hp = battle.player.hp - battle.monster.power
-    message.channel.send(`モンスターの攻撃！\nプレイヤーに${battle.monster.power}のダメージ！\nプレイヤーの残りHP:${battle.player.hp < 0? 0:battle.player.hp}`)
+    message.channel.send(`モンスターの攻撃！\nプレイヤーに${battle.monster.power}のダメージ！\nプレイヤーの残りHP:${battle.player.hp < 0 ? 0 : battle.player.hp}`)
 }
 client.login(process.env.TOKEN);

@@ -3,7 +3,6 @@ const { Client, GatewayIntentBits, EmbedBuilder, AttachmentBuilder, ActionRowBui
 const { createCanvas, loadImage } = require('canvas');
 const { PrismaClient } = require('@prisma/client');
 const fs = require('fs').promises;
-const https = require('https');
 const path = require('path');
 require('dotenv').config();
 const mapWidth = 300; // マップの幅
@@ -20,6 +19,18 @@ const client = new Client({
         GatewayIntentBits.MessageContent
     ],
 });
+let battle = {
+    monster: {
+        hp:null,
+        power:null,
+        speed: null
+    },
+    player:{
+        hp:null,
+        power:null,
+        speed: null 
+    }
+}
 let playerPosition = { x: 6, y: 0 }; // プレイヤーの初期位置（適宜調整）
 async function generateMap(message) {
     const canvas = createCanvas(mapWidth, mapHeight);
@@ -209,23 +220,39 @@ client.on('interactionCreate', async interaction => {
     }
 });
 async function handleBattleCommand(message) {
+    if(message.content == "wwatk"){
+        if(!battle.monster.hp){
+            battle.monster.hp = 50
+            battle.player.hp = 100
+            battle.monster.power = 10
+            battle.player.power = 30
+            await spawnMonster(battle)
+        }else if(battle.monster.hp >= 0 || battle.player.hp >= 0){
+            keepFighting(battle)
+        }else if(battle.player.hp <= 0){
+    
+        }else if(battle.monster.hp <= 0){
+    
+        }
+    }
+}
+async function spawnMonster(battle){
     const userAvatarURL = message.author.avatarURL();
     const currentTime = new Date();
-
-    for (let i = 1; i <= 3; i++) {
-        const randomImagePath = await getRandomImage('./img/monsters');
-        const attachment = new AttachmentBuilder(randomImagePath, { name: path.basename(randomImagePath) });
-        const embed = new EmbedBuilder()
-            .setColor(0x0099FF)
-            .setTitle(`バトル開始！ - Round ${i}`)
-            .setAuthor({ name: message.author.username, iconURL: userAvatarURL })
-            .setDescription(`第${i}戦目`)
-            .setImage(`attachment://${attachment.name}`)
-            .setTimestamp(currentTime)
-            .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` });
-        const sentMessage = await message.channel.send({ files: [attachment], embeds: [embed] });
-        await new Promise(resolve => setTimeout(resolve, 2000));
-    }
+    const randomImagePath = await getRandomImage('./img/monsters');
+    const attachment = new AttachmentBuilder(randomImagePath, { name: path.basename(randomImagePath) });
+    const embed = new EmbedBuilder()
+        .setColor(0x0099FF)
+        .setTitle(`バトル開始！ - Round ${i}`)
+        .setAuthor({ name: message.author.username, iconURL: userAvatarURL })
+        .setDescription(`モンスターのHP:${battle.monster.hp}\n攻撃力:${battle.monster.power}`)
+        .setImage(`attachment://${attachment.name}`)
+        .setTimestamp(currentTime)
+        .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` });
+    const sentMessage = await message.channel.send({ files: [attachment], embeds: [embed] });
+}
+function keepFighting(battle){
+    battle.monster.hp - battle.player.power
 }
 
 client.login(process.env.TOKEN);

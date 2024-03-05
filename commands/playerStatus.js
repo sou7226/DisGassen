@@ -1,0 +1,16 @@
+async function playerStatus(prisma, message) {
+    const user = await prisma.user.findUnique({
+        where: { id: message.author.id },
+    })
+    if (user) {
+        const content = `所持金:${user.coin}\n現在の階層${user.layer}\n経験値:${user.exp}`
+        message.channel.send(content)
+    } else {
+        await prisma.user.create({
+            data: { id: message.author.id }
+        })
+    }
+}
+module.exports = {
+    playerStatus:playerStatus
+}

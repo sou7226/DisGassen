@@ -1,18 +1,12 @@
 const { Client, GatewayIntentBits, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const { createCanvas, loadImage } = require('canvas');
 const { PrismaClient } = require('@prisma/client');
-const { binToHex } = require('./commands/binToHex.js')
-const { hexToBin } = require('./commands/hexToBin.js')
-const { reverseBinary } = require('./commands/reverseBinary.js')
+const { binToHex } = require('./commands/binToHex.js');
+const { hexToBin } = require('./commands/hexToBin.js');
+const { reverseBinary } = require('./commands/reverseBinary.js');
+const { generateMap } = require('./commands/map/generateMap.js');
 const fs = require('fs').promises;
 const path = require('path');
 require('dotenv').config();
-const mapWidth = 300; // マップの幅
-const mapHeight = 200; // マップの高さ
-const tilePath = './img/tails/rock_tail1.png'; // タイルのパス
-const hallPath = './img/tails/black.png'; // タイルのパス
-const redPinPath = './img/red_pin.png'
-const TILE_SIZE = 20;
 const prisma = new PrismaClient();
 const client = new Client({
     intents: [
@@ -23,6 +17,14 @@ const client = new Client({
     ],
 });
 let mapMessage, controllButton;
+let mapInfo = {
+    Width:300, // マップの幅
+    Height:200,
+    tilePath:'./img/tails/rock_tail1.png',
+    hallPath:'./img/tails/black.png',
+    redPinPath:'./img/red_pin.png',
+    TILE_SIZE:20
+}
 let battle = {
     monster: {
         level: null,
@@ -44,43 +46,16 @@ let friend = {
 }
 let player = {
     id: null,
-    avaterURL: null
+    avaterURL: null,
+    x:6,
+    y:0
 }
 battle.player.hp = 100
 battle.player.power = 30
 battle.player.speed = 40
 friend.hp = 100
 friend.power = 30
-friend.speed = 40
-let playerPosition = { x: 6, y: 0 }; // プレイヤーの初期位置（適宜調整）
-async function generateMap(player) {
-    const canvas = createCanvas(mapWidth, mapHeight);
-    const ctx = canvas.getContext('2d');
-    const tileImage = await loadImage(tilePath);
-    const hallImage = await loadImage(hallPath);
-    const playerImage = await loadImage(redPinPath);
-    const terrain = await prisma.terrain.findMany({
-        where: { user_id: player.id },
-    })
-    for (let y = 0; y < mapHeight; y += TILE_SIZE) {
-        for (let x = 0; x < mapWidth; x += TILE_SIZE) {
-            ctx.drawImage(tileImage, x, y, TILE_SIZE, TILE_SIZE);
-            for (let i = 0; i < terrain.length; i++) {
-                ctx.drawImage(hallImage, terrain[i].x * 20, terrain[i].y * 20, TILE_SIZE, TILE_SIZE);
-            }
-        }
-    }
-    const user = await prisma.user.findUnique({
-        where: { id: player.id },
-    })
-    if (user) {
-        playerPosition.x = user.x;
-        playerPosition.y = user.y;
-    }
-    ctx.drawImage(playerImage, playerPosition.x * 20, playerPosition.y * 20, TILE_SIZE, TILE_SIZE);
-    const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'map.png' });
-    return attachment;
-}
+friend.speed = 40// プレイヤーの初期位置（適宜調整）
 const prefix = process.env.PREFIX;
 async function getRandomImage(directory) {
     try {
@@ -146,15 +121,15 @@ client.on('messageCreate', async (message) => {
         await prisma.terrain.create({
             data: {
                 user_id: message.author.id,
-                x: playerPosition.x,
-                y: playerPosition.y
+                x: player.x,
+                y: player.y
             }
         })
         message.channel.send("掘りました！");
     } else if (command === 'map') {
         player.id = message.author.id
         player.avaterURL = message.author.displayAvatarURL({ format: 'png', size: 1024 })
-        const mapAttachment = await generateMap(player);
+        const mapAttachment = await generateMap(prisma, mapInfo, player);
 
         // ボタンを作成
         controllButton = new ActionRowBuilder()
@@ -189,12 +164,12 @@ client.on('interactionCreate', async interaction => {
     let mapAttachment;
     switch (interaction.customId) {
         case 'up':
-            playerPosition.y--;
+            player.y--;
             await prisma.user.update({
                 where: { id: interaction.user.id },
-                data: { y: playerPosition.y }
+                data: { y: player.y }
             })
-            mapAttachment = await generateMap(player);
+            mapAttachment = await generateMap(prisma, mapInfo, player);;
             mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '上に移動しました！', fetchReply: true })
                 .then(sentMessage => {
@@ -206,12 +181,12 @@ client.on('interactionCreate', async interaction => {
                 .catch(console.error);
             break;
         case 'down':
-            playerPosition.y++;
+            player.y++;
             await prisma.user.update({
                 where: { id: interaction.user.id },
-                data: { y: playerPosition.y }
+                data: { y: player.y }
             })
-            mapAttachment = await generateMap(player);
+            mapAttachment = await generateMap(prisma, mapInfo, player);;
             mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '下に移動しました！', fetchReply: true })
                 .then(sentMessage => {
@@ -223,12 +198,12 @@ client.on('interactionCreate', async interaction => {
                 .catch(console.error);
             break;
         case 'left':
-            playerPosition.x--;
+            player.x--;
             await prisma.user.update({
                 where: { id: interaction.user.id },
-                data: { x: playerPosition.x }
+                data: { x: player.x }
             })
-            mapAttachment = await generateMap(player);
+            mapAttachment = await generateMap(prisma, mapInfo, player);;
             mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '左に移動しました！', fetchReply: true })
                 .then(sentMessage => {
@@ -240,12 +215,12 @@ client.on('interactionCreate', async interaction => {
                 .catch(console.error);
             break;
         case 'right':
-            playerPosition.x++;
+            player.x++;
             await prisma.user.update({
                 where: { id: interaction.user.id },
-                data: { x: playerPosition.x }
+                data: { x: player.x }
             })
-            mapAttachment = await generateMap(player);
+            mapAttachment = await generateMap(prisma, mapInfo, player);;
             mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '右に移動しました！', fetchReply: true })
                 .then(sentMessage => {

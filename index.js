@@ -110,6 +110,7 @@ client.on('messageCreate', async (message) => {
         })
         message.channel.send("掘りました！");
     } else if (command === 'map') {
+        playerInfo.id = message.author.id
         const mapAttachment = await generateMap(prisma, mapInfo, playerInfo);
         controllButton = new ActionRowBuilder()
             .addComponents(
@@ -136,7 +137,6 @@ client.on('messageCreate', async (message) => {
 
 client.on('interactionCreate', async interaction => {
     if (!interaction.isButton()) return;
-
     let mapAttachment;
     switch (interaction.customId) {
         case 'up':
@@ -147,14 +147,7 @@ client.on('interactionCreate', async interaction => {
             })
             mapAttachment = await generateMap(prisma, mapInfo, playerInfo);
             mapMessage.edit({ files: [mapAttachment] })
-            await interaction.reply({ content: '上に移動しました！', fetchReply: true })
-                .then(sentMessage => {
-                    // 2秒後に返信を削除
-                    setTimeout(() => {
-                        interaction.deleteReply().catch(console.error);
-                    }, 2000);
-                })
-                .catch(console.error);
+            await interaction.reply({ content: '上に移動しました！', fetchReply: true });         
             break;
         case 'down':
             playerInfo.y++;
@@ -165,13 +158,6 @@ client.on('interactionCreate', async interaction => {
             mapAttachment = await generateMap(prisma, mapInfo, playerInfo);
             mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '下に移動しました！', fetchReply: true })
-                .then(sentMessage => {
-                    // 2秒後に返信を削除
-                    setTimeout(() => {
-                        interaction.deleteReply().catch(console.error);
-                    }, 2000);
-                })
-                .catch(console.error);
             break;
         case 'left':
             playerInfo.x--;
@@ -182,13 +168,6 @@ client.on('interactionCreate', async interaction => {
             mapAttachment = await generateMap(prisma, mapInfo, playerInfo);
             mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '左に移動しました！', fetchReply: true })
-                .then(sentMessage => {
-                    // 2秒後に返信を削除
-                    setTimeout(() => {
-                        interaction.deleteReply().catch(console.error);
-                    }, 2000);
-                })
-                .catch(console.error);
             break;
         case 'right':
             playerInfo.x++;
@@ -199,18 +178,14 @@ client.on('interactionCreate', async interaction => {
             mapAttachment = await generateMap(prisma, mapInfo, playerInfo);
             mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '右に移動しました！', fetchReply: true })
-                .then(sentMessage => {
-                    // 2秒後に返信を削除
-                    setTimeout(() => {
-                        interaction.deleteReply().catch(console.error);
-                    }, 2000);
-                })
-                .catch(console.error);
             break;
         default:
             await interaction.reply('不明な操作です。');
             break;
     }
+    setTimeout(() => {
+        interaction.deleteReply().catch(console.error);
+    }, 1000);   
 });
 async function battleStatus(message) {
 

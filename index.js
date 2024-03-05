@@ -25,34 +25,30 @@ let mapInfo = {
     redPinPath:'./img/red_pin.png',
     TILE_SIZE:20
 }
-let battle = {
-    monster: {
-        level: null,
-        hp: null,
-        power: null,
-        speed: null
-    },
-    player: {
-        level: null,
-        hp: null,
-        power: null,
-        speed: null
-    }
+let monsterInfo = {
+    level: null,
+    hp: null,
+    power: null,
+    speed: null
 }
 let friend = {
     hp: null,
     power: null,
     speed: null
 }
-let player = {
+let playerInfo = {
     id: null,
     avaterURL: null,
+    level: null,
+    hp: null,
+    power: null,
+    speed: null,
     x:6,
     y:0
 }
-battle.player.hp = 100
-battle.player.power = 30
-battle.player.speed = 40
+playerInfo.hp = 100
+playerInfo.power = 30
+playerInfo.speed = 40
 friend.hp = 100
 friend.power = 30
 friend.speed = 40// プレイヤーの初期位置（適宜調整）
@@ -121,15 +117,15 @@ client.on('messageCreate', async (message) => {
         await prisma.terrain.create({
             data: {
                 user_id: message.author.id,
-                x: player.x,
-                y: player.y
+                x: playerInfo.x,
+                y: playerInfo.y
             }
         })
         message.channel.send("掘りました！");
     } else if (command === 'map') {
-        player.id = message.author.id
-        player.avaterURL = message.author.displayAvatarURL({ format: 'png', size: 1024 })
-        const mapAttachment = await generateMap(prisma, mapInfo, player);
+        playerInfo.id = message.author.id
+        playerInfo.avaterURL = message.author.displayAvatarURL({ format: 'png', size: 1024 })
+        const mapAttachment = await generateMap(prisma, mapInfo, playerInfo);
 
         // ボタンを作成
         controllButton = new ActionRowBuilder()
@@ -164,12 +160,12 @@ client.on('interactionCreate', async interaction => {
     let mapAttachment;
     switch (interaction.customId) {
         case 'up':
-            player.y--;
+            playerInfo.y--;
             await prisma.user.update({
                 where: { id: interaction.user.id },
-                data: { y: player.y }
+                data: { y: playerInfo.y }
             })
-            mapAttachment = await generateMap(prisma, mapInfo, player);;
+            mapAttachment = await generateMap(prisma, mapInfo, playerInfo);
             mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '上に移動しました！', fetchReply: true })
                 .then(sentMessage => {
@@ -181,12 +177,12 @@ client.on('interactionCreate', async interaction => {
                 .catch(console.error);
             break;
         case 'down':
-            player.y++;
+            playerInfo.y++;
             await prisma.user.update({
                 where: { id: interaction.user.id },
-                data: { y: player.y }
+                data: { y: playerInfo.y }
             })
-            mapAttachment = await generateMap(prisma, mapInfo, player);;
+            mapAttachment = await generateMap(prisma, mapInfo, playerInfo);
             mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '下に移動しました！', fetchReply: true })
                 .then(sentMessage => {
@@ -198,12 +194,12 @@ client.on('interactionCreate', async interaction => {
                 .catch(console.error);
             break;
         case 'left':
-            player.x--;
+            playerInfo.x--;
             await prisma.user.update({
                 where: { id: interaction.user.id },
-                data: { x: player.x }
+                data: { x: playerInfo.x }
             })
-            mapAttachment = await generateMap(prisma, mapInfo, player);;
+            mapAttachment = await generateMap(prisma, mapInfo, playerInfo);
             mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '左に移動しました！', fetchReply: true })
                 .then(sentMessage => {
@@ -215,12 +211,12 @@ client.on('interactionCreate', async interaction => {
                 .catch(console.error);
             break;
         case 'right':
-            player.x++;
+            playerInfo.x++;
             await prisma.user.update({
                 where: { id: interaction.user.id },
-                data: { x: player.x }
+                data: { x: playerInfo.x }
             })
-            mapAttachment = await generateMap(prisma, mapInfo, player);;
+            mapAttachment = await generateMap(prisma, mapInfo, playerInfo);
             mapMessage.edit({ files: [mapAttachment] })
             await interaction.reply({ content: '右に移動しました！', fetchReply: true })
                 .then(sentMessage => {
@@ -258,34 +254,34 @@ async function BattleTag(message) {
 
 }
 async function handleBattleCommand(message) {
-    if (!battle.monster.hp) {
-        battle.monster.level = 1
-        battle.monster.hp = 50
-        battle.monster.power = 10
-        battle.monster.speed = 30
+    if (!monsterInfo.hp) {
+        monsterInfo.level = 1
+        monsterInfo.hp = 50
+        monsterInfo.power = 10
+        monsterInfo.speed = 30
         await spawnMonster(message, battle)
-    } else if (battle.monster.hp >= 0) {
+    } else if (monsterInfo.hp >= 0) {
         keepFighting(message, battle)
-    } else if (battle.player.hp <= 0) {
+    } else if (playerInfo.hp <= 0) {
         message.channel.send("あなたはもうやられている！")
 
-    } else if (battle.monster.hp <= 0) {
-        battle.monster.hp = null
-        battle.monster.power = null
-        battle.monster.speed = null
+    } else if (monsterInfo.hp <= 0) {
+        monsterInfo.hp = null
+        monsterInfo.power = null
+        monsterInfo.speed = null
         const user = await prisma.user.findUnique({
             where: { id: message.author.id },
         })
         if (user) {
             await prisma.user.update({
                 where: { id: message.author.id },
-                data: { exp: user.exp + battle.monster.level }
+                data: { exp: user.exp + monsterInfo.level }
             })
         } else {
             await prisma.user.create({
                 data: {
                     id: message.author.id,
-                    exp: battle.monster.level
+                    exp: monsterInfo.level
                 }
             })
         }
@@ -302,18 +298,18 @@ async function spawnMonster(message, battle) {
         .setColor(0x0099FF)
         .setTitle(`バトル開始！ - Round 1`)
         .setAuthor({ name: message.author.username, iconURL: userAvatarURL })
-        .setDescription(`モンスターのHP:${battle.monster.hp}\n攻撃力:${battle.monster.power}`)
+        .setDescription(`モンスターのHP:${monsterInfo.hp}\n攻撃力:${monsterInfo.power}`)
         .setImage(`attachment://${attachment.name}`)
         .setTimestamp(currentTime)
         .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` });
     await message.channel.send({ files: [attachment], embeds: [embed] });
 }
 function keepFighting(message, battle) {
-    if (battle.player.speed > battle.monster.speed) {
+    if (playerInfo.speed > monsterInfo.speed) {
         playerAttackProcess(message, battle)
         monstetrAttackProcess(message, battle)
 
-    } else if (battle.player.speed < battle.monster.speed) {
+    } else if (playerInfo.speed < monsterInfo.speed) {
         monstetrAttackProcess(message, battle)
         playerAttackProcess(message, battle)
     } else {
@@ -330,11 +326,11 @@ function keepFighting(message, battle) {
     }
 }
 function playerAttackProcess(message, battle) {
-    battle.monster.hp = battle.monster.hp - battle.player.power
-    message.channel.send(`プレイヤーの攻撃！\nモンスターに${battle.player.power}のダメージ！\nモンスターの残りHP:${battle.monster.hp < 0 ? 0 : battle.monster.hp}`)
+    monsterInfo.hp = monsterInfo.hp - playerInfo.power
+    message.channel.send(`プレイヤーの攻撃！\nモンスターに${playerInfo.power}のダメージ！\nモンスターの残りHP:${monsterInfo.hp < 0 ? 0 : monsterInfo.hp}`)
 }
 function monstetrAttackProcess(message, battle) {
-    battle.player.hp = battle.player.hp - battle.monster.power
-    message.channel.send(`モンスターの攻撃！\nプレイヤーに${battle.monster.power}のダメージ！\nプレイヤーの残りHP:${battle.player.hp < 0 ? 0 : battle.player.hp}`)
+    playerInfo.hp = playerInfo.hp - monsterInfo.power
+    message.channel.send(`モンスターの攻撃！\nプレイヤーに${monsterInfo.power}のダメージ！\nプレイヤーの残りHP:${playerInfo.hp < 0 ? 0 : playerInfo.hp}`)
 }
 client.login(process.env.TOKEN);

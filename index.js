@@ -1,6 +1,9 @@
 const { Client, GatewayIntentBits, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { createCanvas, loadImage } = require('canvas');
 const { PrismaClient } = require('@prisma/client');
+const { binToHex } = require('./commands/binToHex.js')
+const { hexToBin } = require('./commands/hexToBin.js')
+const { reverseBinary } = require('./commands/reverseBinary.js')
 const fs = require('fs').promises;
 const path = require('path');
 require('dotenv').config();
@@ -8,6 +11,7 @@ const mapWidth = 300; // マップの幅
 const mapHeight = 200; // マップの高さ
 const tilePath = './img/tails/rock_tail1.png'; // タイルのパス
 const hallPath = './img/tails/black.png'; // タイルのパス
+const redPinPath = './img/red_pin.png'
 const TILE_SIZE = 20;
 const prisma = new PrismaClient();
 const client = new Client({
@@ -54,8 +58,7 @@ async function generateMap(player) {
     const ctx = canvas.getContext('2d');
     const tileImage = await loadImage(tilePath);
     const hallImage = await loadImage(hallPath);
-    const avatarUrl = player.avaterURL
-    const playerImage = await loadImage(avatarUrl);
+    const playerImage = await loadImage(redPinPath);
     const terrain = await prisma.terrain.findMany({
         where: { user_id: player.id },
     })
@@ -77,27 +80,6 @@ async function generateMap(player) {
     ctx.drawImage(playerImage, playerPosition.x * 20, playerPosition.y * 20, TILE_SIZE, TILE_SIZE);
     const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'map.png' });
     return attachment;
-}
-function binToHex(bin) {
-    // 二進数を整数に変換
-    const decimal = parseInt(bin, 2);
-    // 整数を16進数に変換
-    const hex = decimal.toString(16);
-    return hex;
-}
-function reverseBinary(binaryString) {
-    // 二進数文字列の各文字を反転させる
-    const reversedBinary = binaryString.split('').map(bit => bit === '0' ? '1' : '0').join('');
-    return reversedBinary;
-}
-function hexToBin(hexString, space = null) {
-    // 16進数を2進数に変換
-    const binaryString = parseInt(hexString, 16).toString(2);
-    if (space) {
-        const formattedBinary = binaryString.substring(0, space) + " " + binaryString.substring(space);
-        return formattedBinary;
-    }
-    return binaryString;
 }
 const prefix = process.env.PREFIX;
 async function getRandomImage(directory) {
@@ -135,7 +117,6 @@ client.on('messageCreate', async (message) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
     if (command === 'btohex') {
-        const charArray = Array.from(args[0]);
         message.channel.send(`${binToHex(args[0])}`)
     } else if (command === 'hextob') {
         message.channel.send(`${hexToBin(args[0], 10)}`)
@@ -338,7 +319,7 @@ async function spawnMonster(message, battle){
         .setImage(`attachment://${attachment.name}`)
         .setTimestamp(currentTime)
         .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` });
-    const sentMessage = await message.channel.send({ files: [attachment], embeds: [embed] });
+    await message.channel.send({ files: [attachment], embeds: [embed] });
 }
 function keepFighting(message, battle){
     if (battle.player.speed > battle.monster.speed){

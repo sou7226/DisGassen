@@ -1,8 +1,13 @@
 const { createCanvas, loadImage } = require('canvas');
 const { AttachmentBuilder } = require('discord.js')
-async function generateMap(prisma, mapInfo, playerInfo) {
+const { PrismaClient } = require('@prisma/client');
+require('dotenv').config();
+const prisma = new PrismaClient();
+async function generateMap(mapInfo, playerInfo) {
     const canvas = createCanvas(mapInfo.Width, mapInfo.Height);
     const ctx = canvas.getContext('2d');
+    console.log("playerInfo", playerInfo)
+    console.log("mapInfo", mapInfo)
     const tileImage = await loadImage(mapInfo.tilePath);
     const hallImage = await loadImage(mapInfo.hallPath);
     const playerImage = await loadImage(mapInfo.redPinPath);
@@ -29,5 +34,5 @@ async function generateMap(prisma, mapInfo, playerInfo) {
     return attachment;
 }
 module.exports = {
-    generateMap:generateMap
+    generateMap: generateMap
 }

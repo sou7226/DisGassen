@@ -29,9 +29,14 @@ async function map(message, mapInfo, playerInfo) {
                 playerInfo.y--;
                 const isOutY = (playerInfo.y % 9) + 1
                 if(isOutY !== 0){
-                    playerInfo = await migrate(message, playerInfo)
+                    playerInfo = await migrate(playerInfo)
                 }else{
-                    message.channel.send("それ以上は進むことができませんよ！")
+                    try {
+                        const sentMessage = await message.channel.send("これ以上は進むことはできませんよ！");
+                        setTimeout(() => sentMessage.delete(), 3000); // 3秒後にメッセージを削除
+                    } catch (error) {
+                        console.error('メッセージの送信または削除に失敗しました:', error);
+                    }
                 }
                 mapAttachment = await generateMap(mapInfo, playerInfo);
                 mapMessage.edit({ files: [mapAttachment] })
@@ -40,9 +45,15 @@ async function map(message, mapInfo, playerInfo) {
                 playerInfo.y++;
                 const isOutY = (playerInfo.y % 9) + 1
                 if(isOutY !== 0){
-                    playerInfo = await migrate(message, playerInfo)
+                    playerInfo = await migrate(playerInfo)
                 }else{
-                    message.channel.send("それ以上は進むことができませんよ！")
+                    try {
+                        const sentMessage = await message.channel.send("これ以上は進むことはできませんよ！");
+                        setTimeout(() => sentMessage.delete(), 3000); // 3秒後にメッセージを削除
+                    } catch (error) {
+                        console.error('メッセージの送信または削除に失敗しました:', error);
+                    }
+                
                 }
                 mapAttachment = await generateMap(mapInfo, playerInfo);
                 mapMessage.edit({ files: [mapAttachment] })
@@ -51,9 +62,14 @@ async function map(message, mapInfo, playerInfo) {
                 playerInfo.x--;
                 const isOutX = (playerInfo.x % 14) + 1
                 if(isOutX !== 0){
-                    playerInfo = await migrate(message, playerInfo)
+                    playerInfo = await migrate(playerInfo)
                 }else{
-                    message.channel.send("それ以上は進むことができませんよ！")
+                    try {
+                        const sentMessage = await message.channel.send("これ以上は進むことはできませんよ！");
+                        setTimeout(() => sentMessage.delete(), 3000); // 3秒後にメッセージを削除
+                    } catch (error) {
+                        console.error('メッセージの送信または削除に失敗しました:', error);
+                    }
                 }
                 mapAttachment = await generateMap(mapInfo, playerInfo);
                 mapMessage.edit({ files: [mapAttachment] })
@@ -62,9 +78,14 @@ async function map(message, mapInfo, playerInfo) {
                 playerInfo.x++;
                 const isOutX = (playerInfo.x % 14) + 1
                 if(isOutX !== 0){
-                    playerInfo = await migrate(message, playerInfo)
+                    playerInfo = await migrate(playerInfo)
                 }else{
-                    message.channel.send("それ以上は進むことができませんよ！")
+                    try {
+                        const sentMessage = await message.channel.send("これ以上は進むことはできませんよ！");
+                        setTimeout(() => sentMessage.delete(), 3000); // 3秒後にメッセージを削除
+                    } catch (error) {
+                        console.error('メッセージの送信または削除に失敗しました:', error);
+                    }
                 }
                 mapAttachment = await generateMap(mapInfo, playerInfo);
                 mapMessage.edit({ files: [mapAttachment] })

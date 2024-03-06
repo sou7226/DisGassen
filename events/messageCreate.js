@@ -4,7 +4,10 @@ const { hexToBin } = require('../commands/hexToBin.js');
 const { reverseBinary } = require('../commands/reverseBinary.js');
 const { battle } = require('../commands/battle/battle.js')
 const { map } = require('../commands/map/map.js')
+const { playerStatus } = require('../commands/playerStatus.js')
+const { give } = require('../commands/admin/give.js')
 const prefix = process.env.PREFIX;
+const adminList = process.env.ADMIN_LIST;
 require('dotenv').config();
 const prisma = new PrismaClient();
 
@@ -37,8 +40,6 @@ module.exports = {
             message.channel.send(`${reverseBinary(args[0])}`)
         } else if (command === 'battle') {
             await battle(message, playerInfo, monsterInfo);
-        } else if (command === 'st') {
-            await battleStatus(message);
         } else if (command === 'pinfo') {
             await playerStatus(prisma, message);
         } else if (command === 'dig') {
@@ -52,6 +53,12 @@ module.exports = {
             message.channel.send("掘りました！");
         } else if (command === 'map') {
             await map(message, mapInfo, playerInfo)
+        }
+        if(adminList.some(message.author.id)){
+            if(command === "give"){
+                await give()
+
+            }
         }
     },
 };

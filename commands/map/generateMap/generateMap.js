@@ -18,7 +18,7 @@ async function generateMap(mapInfo, playerInfo) {
     })
     ctx = placeGrass(ctx, grassTileImage, mapInfo)
     ctx = placeHall(ctx, hallImage, terrain, mapInfo)
-    ctx = await placeMonster(ctx, playerInfo, tileImage)
+    ctx = await placeMonster(ctx, playerInfo, mapInfo, tileImage)
     const user = await prisma.user.findUnique({
         where: { id: playerInfo.id },
     })

@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 require('dotenv').config();
 const prisma = new PrismaClient();
-async function placeMonster(ctx, playerInfo, mapInfo, tileImage) {
+async function placeMonster(ctx, tileImage, playerInfo, mapInfo) {
     const monster = await prisma.monster.findMany({
         where: { user_id: playerInfo.id },
     })

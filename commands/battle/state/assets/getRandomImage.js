@@ -13,7 +13,6 @@ async function getRandomImage(directory) {
         throw err;
     }
 }
-
 module.exports = {
     getRandomImage:getRandomImage
 }

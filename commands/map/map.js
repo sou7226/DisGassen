@@ -1,4 +1,5 @@
 const { generateMap } = require('./generateMap/generateMap.js');
+const { migrate } = require('./migrate/migrate.js')
 const upMessage = ["u", "up", "↑", "上", "うえ", "ue", "う"];
 const rightMessage = ["r", "right", "→", "右", "みぎ", "migi", "み"];
 const leftMessage = ["l", "left", "←", "左", "ひだり", "hidari", "ひ"];
@@ -26,37 +27,45 @@ async function map(message, mapInfo, playerInfo) {
             } else if (upMessage.includes(responseMessage.content)) {
                 await responseMessage.delete()
                 playerInfo.y--;
-                await prisma.user.update({
-                    where: { id: message.author.id },
-                    data: { y: playerInfo.y }
-                })
+                const isOutY = (playerInfo.y % 9) + 1
+                if(isOutY !== 0){
+                    playerInfo = await migrate(message, playerInfo)
+                }else{
+                    message.channel.send("それ以上は進むことができませんよ！")
+                }
                 mapAttachment = await generateMap(mapInfo, playerInfo);
                 mapMessage.edit({ files: [mapAttachment] })
             } else if (downMessage.includes(responseMessage.content)) {
                 await responseMessage.delete()
                 playerInfo.y++;
-                await prisma.user.update({
-                    where: { id: message.author.id },
-                    data: { y: playerInfo.y }
-                })
+                const isOutY = (playerInfo.y % 9) + 1
+                if(isOutY !== 0){
+                    playerInfo = await migrate(message, playerInfo)
+                }else{
+                    message.channel.send("それ以上は進むことができませんよ！")
+                }
                 mapAttachment = await generateMap(mapInfo, playerInfo);
                 mapMessage.edit({ files: [mapAttachment] })
             } else if (leftMessage.includes(responseMessage.content)) {
                 await responseMessage.delete()
                 playerInfo.x--;
-                await prisma.user.update({
-                    where: { id: message.author.id },
-                    data: { x: playerInfo.x }
-                })
+                const isOutX = (playerInfo.x % 14) + 1
+                if(isOutX !== 0){
+                    playerInfo = await migrate(message, playerInfo)
+                }else{
+                    message.channel.send("それ以上は進むことができませんよ！")
+                }
                 mapAttachment = await generateMap(mapInfo, playerInfo);
                 mapMessage.edit({ files: [mapAttachment] })
             } else if (rightMessage.includes(responseMessage.content)) {
                 await responseMessage.delete()
                 playerInfo.x++;
-                await prisma.user.update({
-                    where: { id: message.author.id },
-                    data: { x: playerInfo.x }
-                })
+                const isOutX = (playerInfo.x % 14) + 1
+                if(isOutX !== 0){
+                    playerInfo = await migrate(message, playerInfo)
+                }else{
+                    message.channel.send("それ以上は進むことができませんよ！")
+                }
                 mapAttachment = await generateMap(mapInfo, playerInfo);
                 mapMessage.edit({ files: [mapAttachment] })
             }

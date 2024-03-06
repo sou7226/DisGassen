@@ -1,11 +1,10 @@
 const { createCanvas, loadImage } = require('canvas');
 const { AttachmentBuilder } = require('discord.js')
-const { PrismaClient } = require('@prisma/client');
 const { placeMonster } = require('./object/placeMonster.js')
 const { placeHall } = require('./object/placeHall.js')
 const { placeGrass } = require('./object/placeGrass.js')
+const { placePlayer } = require('./object/placePlayer.js')
 require('dotenv').config();
-const prisma = new PrismaClient();
 async function generateMap(mapInfo, playerInfo) {
     const canvas = createCanvas(mapInfo.Width, mapInfo.Height);
     const tileImage = await loadImage(mapInfo.tilePath);
@@ -13,20 +12,10 @@ async function generateMap(mapInfo, playerInfo) {
     const hallImage = await loadImage(mapInfo.hallPath);
     const playerImage = await loadImage(mapInfo.redPinPath);
     let ctx = canvas.getContext('2d');
-    const terrain = await prisma.terrain.findMany({
-        where: { user_id: playerInfo.id },
-    })
     ctx = placeGrass(ctx, grassTileImage, mapInfo)
-    ctx = placeHall(ctx, hallImage, terrain, mapInfo)
-    ctx = await placeMonster(ctx, playerInfo, mapInfo, tileImage)
-    const user = await prisma.user.findUnique({
-        where: { id: playerInfo.id },
-    })
-    if (user) {
-        playerInfo.x = user.x;
-        playerInfo.y = user.y;
-    }
-    ctx.drawImage(playerImage, playerInfo.x * 20, playerInfo.y * 20, mapInfo.TILE_SIZE, mapInfo.TILE_SIZE);
+    ctx = await placeHall(ctx, hallImage, playerInfo, mapInfo)
+    ctx = await placeMonster(ctx, tileImage, playerInfo, mapInfo)
+    ctx = await placePlayer(ctx, playerImage, playerInfo, mapInfo)
     const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'map.png' });
     return attachment;
 }

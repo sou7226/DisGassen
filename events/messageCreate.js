@@ -1,4 +1,4 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { PrismaClient } = require('@prisma/client');
 const { binToHex } = require('../commands/binToHex.js');
 const { hexToBin } = require('../commands/hexToBin.js');
@@ -41,7 +41,7 @@ module.exports = {
         } else if (command === 'reverse') {
             message.channel.send(`${reverseBinary(args[0])}`)
         } else if (command === 'battle') {
-            await battle(message, prisma, playerInfo, monsterInfo);
+            await battle(message, playerInfo, monsterInfo);
         } else if (command === 'st') {
             await battleStatus(message);
         } else if (command === 'pinfo') {
@@ -61,7 +61,6 @@ module.exports = {
             const mapMessage = await message.channel.send({ files: [mapAttachment] });
             while (true) {
                 try {
-                    console.log(message.author.id)
                     const collected = await message.channel
                         .awaitMessages({
                             filter: (m) => message.author.id === m.author.id,

@@ -1,7 +1,8 @@
-
 const { spawnMonster } = require('./state/spawnMonster.js')
 const { keepFighting } = require('./state/keepFighting.js')
-async function battle(message, prisma, playerInfo, monsterInfo) {
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+async function battle(message, playerInfo, monsterInfo) {
     if (!monsterInfo.hp) {
         monsterInfo.level = 1
         monsterInfo.hp = 50
@@ -38,5 +39,5 @@ async function battle(message, prisma, playerInfo, monsterInfo) {
 
 }
 module.exports = {
-    battle:battle
+    battle: battle
 }

@@ -6,8 +6,6 @@ const prisma = new PrismaClient();
 async function generateMap(mapInfo, playerInfo) {
     const canvas = createCanvas(mapInfo.Width, mapInfo.Height);
     const ctx = canvas.getContext('2d');
-    console.log("playerInfo", playerInfo)
-    console.log("mapInfo", mapInfo)
     const tileImage = await loadImage(mapInfo.tilePath);
     const hallImage = await loadImage(mapInfo.hallPath);
     const playerImage = await loadImage(mapInfo.redPinPath);

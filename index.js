@@ -13,12 +13,12 @@ const client = new Client({
 client.mapMessage;
 client.controllButton;
 let mapInfo = {
-    Width:300, // マップの幅
-    Height:200,
-    tilePath:'./img/tails/rock_tail1.png',
-    hallPath:'./img/tails/black.png',
-    redPinPath:'./img/red_pin.png',
-    TILE_SIZE:20
+    Width: 300, // マップの幅
+    Height: 200,
+    tilePath: './img/tails/rock_tail1.png',
+    hallPath: './img/tails/black.png',
+    redPinPath: './img/red_pin.png',
+    TILE_SIZE: 20
 }
 let monsterInfo = {
     level: null,
@@ -38,8 +38,8 @@ let playerInfo = {
     hp: null,
     power: null,
     speed: null,
-    x:6,
-    y:0
+    x: 6,
+    y: 0
 }
 playerInfo.hp = 100
 playerInfo.power = 30

@@ -2,10 +2,11 @@
 const { PrismaClient } = require('@prisma/client');
 const { AttachmentBuilder, EmbedBuilder } = require('discord.js')
 const prisma = new PrismaClient();
+const path = require('path');
 async function autoBot(message, playerInfo) {
     const userAvatarURL = message.author.avatarURL();
     const currentTime = new Date();
-    const robotPath = '../img/robot/robot.png'
+    const robotPath = path.join('./img/robot/', 'robot.png');
     const attachment = new AttachmentBuilder(robotPath, { name: "robot.png" });
     const embed = new EmbedBuilder()
         .setColor(0x0099FF)

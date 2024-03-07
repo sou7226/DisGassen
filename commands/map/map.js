@@ -28,9 +28,9 @@ async function map(message, mapInfo, playerInfo) {
                 await responseMessage.delete()
                 playerInfo.y--;
                 const isOutY = (playerInfo.y % 9) + 1
-                if(isOutY !== 0){
+                if (isOutY !== 0) {
                     playerInfo = await migrate(playerInfo)
-                }else{
+                } else {
                     try {
                         const sentMessage = await message.channel.send("これ以上は進むことはできませんよ！");
                         setTimeout(() => sentMessage.delete(), 3000); // 3秒後にメッセージを削除
@@ -44,16 +44,15 @@ async function map(message, mapInfo, playerInfo) {
                 await responseMessage.delete()
                 playerInfo.y++;
                 const isOutY = (playerInfo.y % 9) + 1
-                if(isOutY !== 0){
+                if (isOutY !== 0) {
                     playerInfo = await migrate(playerInfo)
-                }else{
+                } else {
                     try {
                         const sentMessage = await message.channel.send("これ以上は進むことはできませんよ！");
                         setTimeout(() => sentMessage.delete(), 3000); // 3秒後にメッセージを削除
                     } catch (error) {
                         console.error('メッセージの送信または削除に失敗しました:', error);
                     }
-                
                 }
                 mapAttachment = await generateMap(mapInfo, playerInfo);
                 mapMessage.edit({ files: [mapAttachment] })
@@ -61,9 +60,9 @@ async function map(message, mapInfo, playerInfo) {
                 await responseMessage.delete()
                 playerInfo.x--;
                 const isOutX = (playerInfo.x % 14) + 1
-                if(isOutX !== 0){
+                if (isOutX !== 0) {
                     playerInfo = await migrate(playerInfo)
-                }else{
+                } else {
                     try {
                         const sentMessage = await message.channel.send("これ以上は進むことはできませんよ！");
                         setTimeout(() => sentMessage.delete(), 3000); // 3秒後にメッセージを削除
@@ -77,9 +76,9 @@ async function map(message, mapInfo, playerInfo) {
                 await responseMessage.delete()
                 playerInfo.x++;
                 const isOutX = (playerInfo.x % 14) + 1
-                if(isOutX !== 0){
+                if (isOutX !== 0) {
                     playerInfo = await migrate(playerInfo)
-                }else{
+                } else {
                     try {
                         const sentMessage = await message.channel.send("これ以上は進むことはできませんよ！");
                         setTimeout(() => sentMessage.delete(), 3000); // 3秒後にメッセージを削除

@@ -7,6 +7,7 @@ const { map } = require('../commands/map/map.js')
 const { playerStatus } = require('../commands/playerStatus.js')
 const { give } = require('../commands/admin/giveItem/give.js')
 const { Inventory } = require('../commands/Inventory.js')
+const { autoBot } = require('../commands/autoBot.js')
 const prefix = process.env.PREFIX;
 const adminList = process.env.ADMIN_LIST;
 require('dotenv').config();
@@ -43,6 +44,8 @@ module.exports = {
             await battle(message, playerInfo, monsterInfo);
         } else if (command === 'pinfo') {
             await playerStatus(prisma, message);
+        } else if (command === 'autob') {
+            await autoBot(message, playerInfo);
         } else if (command === 'inv') {
             playerInfo.id = message.author.id
             const content = await Inventory(playerInfo);

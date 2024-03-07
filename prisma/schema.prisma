@@ -19,28 +19,12 @@ model user {
   layer Int      @default(1)
   x     Int      @default(6)
   y     Int      @default(0)
-  items playerItem[]
 }
-
-model item {
-  item_id Int          @id @default(autoincrement())
-  name    String
-  type    String
-  effect  String
-  value   Int
-  rarity  String
-  players playerItem[]
-}
-
 model playerItem {
-  player_item_id Int    @id @default(autoincrement())
-  quantity       Int    @default(1)
-  user           user   @relation(fields: [user_id], references: [id])
-  user_id        String
-  item           item   @relation(fields: [item_id], references: [item_id])
+  user_id        String @id
   item_id        Int
+  quantity       Int    @default(1)
 }
-
 model terrain {
   id Int @id @default(autoincrement())
   user_id String

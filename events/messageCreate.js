@@ -5,7 +5,7 @@ const { reverseBinary } = require('../commands/reverseBinary.js');
 const { battle } = require('../commands/battle/battle.js')
 const { map } = require('../commands/map/map.js')
 const { playerStatus } = require('../commands/playerStatus.js')
-const { give } = require('../commands/admin/give.js')
+const { give } = require('../commands/admin/giveItem/give.js')
 const prefix = process.env.PREFIX;
 const adminList = process.env.ADMIN_LIST;
 require('dotenv').config();
@@ -54,10 +54,10 @@ module.exports = {
         } else if (command === 'map') {
             await map(message, mapInfo, playerInfo)
         }
-        if(adminList.some(message.author.id)){
-            if(command === "give"){
-                await give()
-
+        if (adminList.includes(message.author.id)) {
+            if (command === "give") {
+                playerInfo.id = message.author.id
+                content = await give(playerInfo, args)
             }
         }
     },

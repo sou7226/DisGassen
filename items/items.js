@@ -120,3 +120,21 @@ const nightVisionGoggles = {
     value: 600,
     rarity: "レア"
 };
+const items = [
+    elixirBook,
+    fireballBook,
+    soil,
+    monsterBleed,
+    magicStone,
+    healingPotion,
+    invisibilityCloak,
+    ancientScroll,
+    dragonScale,
+    teleportStone,
+    lightFeather,
+    poisonDagger,
+    goldenApple,
+    nightVisionGoggles
+];
+
+module.exports = { items };

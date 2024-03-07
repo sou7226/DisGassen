@@ -1,5 +1,4 @@
 const { PrismaClient } = require('@prisma/client');
-require('dotenv').config();
 const prisma = new PrismaClient();
 async function placeHall(ctx, hallImage, playerInfo, mapInfo) {
     const terrain = await prisma.terrain.findMany({

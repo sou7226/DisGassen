@@ -6,10 +6,9 @@ async function placeMonster(ctx, tileImage, playerInfo, mapInfo) {
         where: { user_id: playerInfo.id },
     })
     if (monster.length === 0) {
-        for(let i = 0; i <= 5; i++){
+        for (let i = 0; i <= 5; i++) {
             const x = Math.floor(Math.random() * 10);
             const y = Math.floor(Math.random() * 15);
-            console.log(playerInfo.id, x, y)
             ctx.drawImage(tileImage, x * 20, y * 20, mapInfo.TILE_SIZE, mapInfo.TILE_SIZE);
             await prisma.monster.create({
                 data: {

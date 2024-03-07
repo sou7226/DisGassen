@@ -19,6 +19,7 @@ model user {
   layer Int      @default(1)
   x     Int      @default(6)
   y     Int      @default(0)
+  monstersDefeated Int    @default(0)
 }
 model playerItem {
   id Int @id @default(autoincrement())

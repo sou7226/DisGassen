@@ -24,13 +24,17 @@ async function battle(message, playerInfo, monsterInfo) {
         if (user) {
             await prisma.user.update({
                 where: { id: message.author.id },
-                data: { exp: user.exp + monsterInfo.level }
+                data: {
+                    exp: user.exp + monsterInfo.level,
+                    monstersDefeated: user.monstersDefeated + 1
+                }
             })
         } else {
             await prisma.user.create({
                 data: {
                     id: message.author.id,
-                    exp: monsterInfo.level
+                    exp: monsterInfo.level,
+                    monstersDefeated: 1
                 }
             })
         }

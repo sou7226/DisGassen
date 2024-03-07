@@ -3,7 +3,7 @@ async function playerStatus(prisma, message) {
         where: { id: message.author.id },
     })
     if (user) {
-        const content = `所持金:${user.coin}\n現在の階層${user.layer}\n経験値:${user.exp}`
+        const content = `所持金:${user.coin}\n現在の階層${user.layer}\n経験値:${user.exp}\n討伐数:${user.monstersDefeated}`
         message.channel.send(content)
     } else {
         await prisma.user.create({
@@ -12,5 +12,5 @@ async function playerStatus(prisma, message) {
     }
 }
 module.exports = {
-    playerStatus:playerStatus
+    playerStatus: playerStatus
 }

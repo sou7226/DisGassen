@@ -21,7 +21,8 @@ model user {
   y     Int      @default(0)
 }
 model playerItem {
-  user_id        String @id
+  id Int @id @default(autoincrement())
+  user_id        String
   item_id        Int
   quantity       Int    @default(1)
 }

@@ -3,24 +3,11 @@ const { searchItem } = require('./searchItem/searchItem.js')
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 async function give(playerInfo, args) {
-    if (typeof args[0] === 'number' && Number.isInteger(args[0])) {
-        const item = items.find(item => item.item_id === parseInt(args[0]));
-        if (item) {
-            await prisma.playerItem.updateMany({
-                where: {
-                    user_id: playerInfo.id,
-                    item_id: item.item_id,
-                },
-                data: {
-                    quantity: parseInt(args[1]),
-                },
-            });
-        }
-    } else if (typeof args[0] === 'string') {
+    if (typeof args[0] === 'string') {
         const item = items.find(item => item.name === args[0]);
         console.log(playerInfo.id, item.name)
         if (item) {
-            const existingItem = await prisma.playerItem.findUnique({
+            const existingItem = await prisma.playerItem.findFirst({
                 where: {
                     user_id: playerInfo.id,
                     item_id: item.item_id,
@@ -30,8 +17,7 @@ async function give(playerInfo, args) {
             if (existingItem) {
                 await prisma.playerItem.update({
                     where: {
-                        user_id: playerInfo.id,
-                        item_id: item.item_id,
+                        id: existingItem.id
                     },
                     data: { quantity: existingItem.quantity + parseInt(args[1]) },
                 });
@@ -47,7 +33,6 @@ async function give(playerInfo, args) {
             return
         }
     }
-
 }
 
 

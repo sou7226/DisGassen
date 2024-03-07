@@ -12,11 +12,12 @@ CREATE TABLE `user` (
 
 -- CreateTable
 CREATE TABLE `playerItem` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` VARCHAR(191) NOT NULL,
     `item_id` INTEGER NOT NULL,
     `quantity` INTEGER NOT NULL DEFAULT 1,
 
-    PRIMARY KEY (`user_id`)
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable

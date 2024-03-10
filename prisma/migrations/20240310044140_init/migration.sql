@@ -6,6 +6,7 @@ CREATE TABLE `user` (
     `layer` INTEGER NOT NULL DEFAULT 1,
     `x` INTEGER NOT NULL DEFAULT 6,
     `y` INTEGER NOT NULL DEFAULT 0,
+    `monstersDefeated` INTEGER NOT NULL DEFAULT 0,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

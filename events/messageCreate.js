@@ -8,6 +8,7 @@ const { playerStatus } = require('../commands/playerStatus.js')
 const { give } = require('../commands/admin/giveItem/give.js')
 const { Inventory } = require('../commands/Inventory.js')
 const { autoBot } = require('../commands/autoBot.js')
+const { gassen } = require('../commands/gassen/gassen.js')
 const prefix = process.env.PREFIX;
 const adminList = process.env.ADMIN_LIST;
 require('dotenv').config();
@@ -61,6 +62,8 @@ module.exports = {
             message.channel.send("掘りました！");
         } else if (command === 'map') {
             await map(message, mapInfo, playerInfo)
+        } else if (command === 'gassen') {
+            await gassen(message, mapInfo, playerInfo)
         }
         if (adminList.includes(message.author.id)) {
             if (command === "give") {

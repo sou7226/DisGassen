@@ -4,13 +4,9 @@ const { AttachmentBuilder, EmbedBuilder } = require('discord.js')
 const prisma = new PrismaClient();
 const path = require('path');
 function selectRandomHandSign(botHandSign) {
-    // オブジェクトのキーを配列として取得
     const keys = Object.keys(botHandSign);
-    // ランダムなインデックスを生成
     const randomIndex = Math.floor(Math.random() * keys.length);
-    // ランダムなキーを選択
     const selectedKey = keys[randomIndex];
-    // 選択したキーを使用して、オブジェクトから値を取得
     return botHandSign[selectedKey];
 }
 

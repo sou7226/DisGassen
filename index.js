@@ -1,11 +1,11 @@
 const { Client, GatewayIntentBits } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
-
 const { friendInfo } = require('./informations/friendInfo')
 const { mapInfo } = require('./informations/mapInfo')
 const { monsterInfo } = require('./informations/monsterInfo')
 const { playerInfo } = require('./informations/playerInfo')
+const fs = require('fs');
+const path = require('path');
+
 
 require('dotenv').config();
 const client = new Client({
@@ -25,6 +25,7 @@ playerInfo.speed = 40
 friendInfo.hp = 100
 friendInfo.power = 30
 friendInfo.speed = 40
+
 client.commands = new Map();
 
 const eventsPath = path.join(__dirname, 'events');

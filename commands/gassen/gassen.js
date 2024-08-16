@@ -1,8 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
-const { AttachmentBuilder, EmbedBuilder } = require('discord.js')
-//const { generateField } = require('./generateField/generateField.js')
-const prisma = new PrismaClient();
-const path = require('path');
+const { EmbedBuilder } = require('discord.js')
+const { getGassenPlayerInfo } = require('./gassenInit.js')
 function selectRandomHandSign(botHandSign) {
     const keys = Object.keys(botHandSign);
     const randomIndex = Math.floor(Math.random() * keys.length);
@@ -11,16 +8,7 @@ function selectRandomHandSign(botHandSign) {
 }
 
 async function gassen(message, mapInfo, playerInfo) {
-    const botHandSigns = {
-        rock: 98,
-        scissors: 99,
-        paper: 100,
-    }
-    const playuerHandSigns = {
-        rock: 89,
-        scissors: 90,
-        paper: 91,
-    }
+    const {playerHandSigns, botHandSigns} = getGassenPlayerInfo()
     const currentTime = new Date();
     const embed = new EmbedBuilder()
         .setColor(0x0099FF)
@@ -33,9 +21,9 @@ async function gassen(message, mapInfo, playerInfo) {
             { name: ' ', value: ' ', inline: true },
             { name: 'vs', value: ' ', inline: true },
             { name: ' ', value: ' ', inline: true },
-            { name: '1⃣拳', value: `${playuerHandSigns.rock}`, inline: true },
-            { name: '2⃣双剣', value: `${playuerHandSigns.scissors}`, inline: true },
-            { name: '3⃣盾', value: `${playuerHandSigns.paper}`, inline: true },
+            { name: '1⃣拳', value: `${playerHandSigns.rock}`, inline: true },
+            { name: '2⃣双剣', value: `${playerHandSigns.scissors}`, inline: true },
+            { name: '3⃣盾', value: `${playerHandSigns.paper}`, inline: true },
         )
         .setTimestamp(currentTime)
         .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` })

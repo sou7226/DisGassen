@@ -15,7 +15,7 @@ function getGassenPlayerInfo(){
     }
     return { 
         playerHandSigns: playerHandSigns, 
-        botHandSigns: botHandSigns 
+        botHandSigns: botHandSigns
     };
 }
 

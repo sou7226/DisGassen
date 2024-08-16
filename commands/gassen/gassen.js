@@ -29,33 +29,39 @@ async function gassen(message, mapInfo, playerInfo) {
         .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` })
     await message.channel.send({ embeds: [embed] });
     while (true) {
-        const collected = await message.channel
+        try{
+            const collected = await message.channel
             .awaitMessages({
                 filter: (m) => message.author.id === m.author.id,
                 max: 1,
                 time: 30_000,
                 errors: ['time']
             });
-        const responseMessage = collected.first();
-        if (responseMessage.content === "0") {
+            const responseMessage = collected.first();
+            if (responseMessage.content === "0") {
+                message.channel.send(`終了`)
+                break
+            } else if (responseMessage.content === "1") {
+                const handSign = selectRandomHandSign(botHandSigns)
+                message.channel.send(`${handSign}`)
+                continue
+            } else if (responseMessage.content === "2") {
+                const handSign = selectRandomHandSign(botHandSigns)
+                message.channel.send(`${handSign}`)
+                continue
+            } else if (responseMessage.content === "3") {
+                const handSign = selectRandomHandSign(botHandSigns)
+                message.channel.send(`${handSign}`)
+                continue
+            } else {
+                message.channel.send(`正しい数字を発言してください`)
+                continue
+            }
+        }catch(error){
             message.channel.send(`終了`)
             break
-        } else if (responseMessage.content === "1") {
-            const handSign = selectRandomHandSign(botHandSigns)
-            message.channel.send(`${handSign}`)
-            continue
-        } else if (responseMessage.content === "2") {
-            const handSign = selectRandomHandSign(botHandSigns)
-            message.channel.send(`${handSign}`)
-            continue
-        } else if (responseMessage.content === "3") {
-            const handSign = selectRandomHandSign(botHandSigns)
-            message.channel.send(`${handSign}`)
-            continue
-        } else {
-            message.channel.send(`正しい数字を発言してください`)
-            continue
         }
+
 
     }
 }

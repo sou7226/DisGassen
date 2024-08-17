@@ -9,6 +9,7 @@ const { give } = require('../commands/admin/giveItem/give.js')
 const { Inventory } = require('../commands/Inventory.js')
 const { autoBot } = require('../commands/autoBot.js')
 const { gassen } = require('../commands/gassen/gassen.js')
+const { help } = require('../commands/help/help.js')
 const prefix = process.env.PREFIX;
 const adminList = process.env.ADMIN_LIST;
 require('dotenv').config();
@@ -35,6 +36,9 @@ module.exports = {
 
         const args = message.content.slice(prefix.length).trim().split(/ +/);
         const command = args.shift().toLowerCase();
+        if (command == 'help'){
+            help(message, args)
+        }
         if (command === 'btohex') {
             message.channel.send(`${binToHex(args[0])}`)
         } else if (command === 'hextob') {

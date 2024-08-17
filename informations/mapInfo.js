@@ -5,6 +5,7 @@ let mapInfo = {
     grassTilePath: './img/tiles/grass_tile.png',
     hallPath: './img/tiles/black.png',
     redPinPath: './img/red_pin.png',
+    shopPath : './img/buildings/shop.png',
     TILE_SIZE: 20
 }
 module.exports = {

@@ -42,5 +42,13 @@ model monster{
   x Int
   y Int
 }
-
+model building{
+  id Int @id @default(autoincrement())
+  user_id String
+  building_id Int
+  level Int @default(1)
+  layer Int @default(1)
+  x Int
+  y Int
+}
 

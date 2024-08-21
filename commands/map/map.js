@@ -22,7 +22,6 @@ async function map(message, mapInfo, playerInfo) {
                     errors: ['time'] //時間超過したらエラーを発生
                 });
             const responseMessage = collected.first();
-            console.log(playerInfo.y)
             if (responseMessage.content === "0") { //0なら終了
                 message.channel.send('終了します。');
                 break;

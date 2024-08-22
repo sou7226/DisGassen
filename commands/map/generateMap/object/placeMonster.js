@@ -5,7 +5,6 @@ async function placeMonster(ctx, tileImage, playerInfo, mapInfo) {
     const monster = await prisma.monster.findMany({
         where: { user_id: playerInfo.id },
     })
-    console.log(monster)
     if (monster.length === 0) {
         for (let i = 0; i <= 5; i++) {
             const x = Math.floor(Math.random() * 10);

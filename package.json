@@ -11,7 +11,8 @@
     "canvas": "*",
     "discord.js": "*",
     "dotenv": "*",
-    "prisma": "*"
+    "package.json": "^2.0.1",
+    "prisma": "^5.18.0"
   },
   "author": "",
   "license": "ISC"

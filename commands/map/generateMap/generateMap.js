@@ -14,11 +14,14 @@ async function generateMap(mapInfo, playerInfo) {
     const playerImage = await loadImage(mapInfo.redPinPath);
     const shopImage = await loadImage(mapInfo.shopPath);
     let ctx = canvas.getContext('2d');
+    console.log("placeMonster: " + placeMonster)
+    console.log("placeBuilding: " + placeBuilding)
     ctx = placeGrass(ctx, grassTileImage, mapInfo)
     ctx = await placeHall(ctx, hallImage, playerInfo, mapInfo)
     ctx = await placeMonster(ctx, tileImage, playerInfo, mapInfo)
-    ctx = await placePlayer(ctx, playerImage, playerInfo, mapInfo)
     ctx = await placeBuilding(ctx, shopImage, playerInfo, mapInfo)
+    //これより下に画像を追加しようとするとエラー吐くので注意（原因不明）
+    ctx = await placePlayer(ctx, playerImage, playerInfo, mapInfo)
     const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'map.png' });
     return attachment;
 }

@@ -1,10 +1,10 @@
 const { generateMap } = require('./generateMap/generateMap.js');
-const { migrate } = require('./migrate/migrate.js')
+const { updateCoords } = require('./db/updateCoords.js')
+require('dotenv').config();
 const upMessage = ["u", "up", "↑", "上", "うえ", "ue", "う"];
 const rightMessage = ["r", "right", "→", "右", "みぎ", "migi", "み"];
 const leftMessage = ["l", "left", "←", "左", "ひだり", "hidari", "ひ"];
 const downMessage = ["d", "down", "↓", "下", "した", "sita", "し"];
-require('dotenv').config();
 
 async function map(message, mapInfo, playerInfo) {
     playerInfo.id = message.author.id
@@ -29,7 +29,7 @@ async function map(message, mapInfo, playerInfo) {
                 await responseMessage.delete()//対象のメッセージを削除
                 if (playerInfo.y - 1 >= 0) { //yが0以上の場合(マップからはみ出さない場合)
                     playerInfo.y--;
-                    playerInfo = await migrate(playerInfo)
+                    playerInfo = await updateCoords(playerInfo)
                     mapAttachment = await generateMap(mapInfo, playerInfo);
                     mapMessage.edit({ files: [mapAttachment] })
                 } else {//0以下の場合(マップからはみ出る場合)
@@ -39,7 +39,7 @@ async function map(message, mapInfo, playerInfo) {
                 await responseMessage.delete()
                 if (playerInfo.y + 1 <= mapHeight) { //yが9以下の場合(マップからはみ出さない場合)
                     playerInfo.y++;
-                    playerInfo = await migrate(playerInfo)
+                    playerInfo = await updateCoords(playerInfo)
                     mapAttachment = await generateMap(mapInfo, playerInfo);
                     mapMessage.edit({ files: [mapAttachment] })
                 } else {//mapHeigh以上になる場合(マップからはみ出る場合)
@@ -49,7 +49,7 @@ async function map(message, mapInfo, playerInfo) {
                 await responseMessage.delete()
                 if (playerInfo.x - 1 >= 0) {
                     playerInfo.x--;
-                    playerInfo = await migrate(playerInfo)
+                    playerInfo = await updateCoords(playerInfo)
                     mapAttachment = await generateMap(mapInfo, playerInfo);
                     mapMessage.edit({ files: [mapAttachment] })
                 } else {//0以下の場合(マップからはみ出る場合)
@@ -59,7 +59,7 @@ async function map(message, mapInfo, playerInfo) {
                 await responseMessage.delete()
                 if (playerInfo.x + 1 <= mapWidth) {
                     playerInfo.x++;
-                    playerInfo = await migrate(playerInfo)
+                    playerInfo = await updateCoords(playerInfo)
                     mapAttachment = await generateMap(mapInfo, playerInfo);
                     mapMessage.edit({ files: [mapAttachment] })
                 } else {//mapWidth以上の場合(マップからはみ出る場合)

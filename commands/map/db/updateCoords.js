@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 require('dotenv').config();
 const prisma = new PrismaClient();
-async function migrate(playerInfo){
+async function updateCoords(playerInfo){
     await prisma.user.update({
         where: { id: playerInfo.id },
         data: { 
@@ -11,5 +11,5 @@ async function migrate(playerInfo){
     return playerInfo
 }
 module.exports = {
-    migrate:migrate
+    updateCoords:updateCoords
 }

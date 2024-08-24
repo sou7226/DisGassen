@@ -9,19 +9,18 @@ async function shop(message, items) {
     const buildingPath = path.join('./img/buildings/', 'shop.png');
     const attachment = new AttachmentBuilder(buildingPath, { name: "shop.png" });
     let lists = []
-    for( let i = 0; i < items.length; i++){
-        lists.push({name: `\`${items[i].name}\``, value: items[i].effect})
+    for (let i = 0; i < items.length; i++) {
+        lists.push({ name: `\`${items[i].item_id}.\`${items[i].name}`, value: items[i].effect, inline: true })
     }
     const embed = new EmbedBuilder()
         .setColor(0x0099FF)
-        .setTitle(`人形`)
+        .setTitle(`アイテムショップ`)
         .setThumbnail(`attachment://${attachment.name}`)
         .setAuthor({ name: message.author.username, iconURL: userAvatarURL })
-        .setDescription(`人形`)
+        .setDescription(`いらっしゃい～！見ていってね！`)
         .setTimestamp(currentTime)
         .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` })
         .addFields(lists)
-    console.log(items)
     await message.channel.send({ files: [attachment], embeds: [embed] });
 }
 module.exports = {

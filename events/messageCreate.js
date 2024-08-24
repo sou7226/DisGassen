@@ -10,6 +10,8 @@ const { Inventory } = require('../commands/Inventory.js')
 const { autoBot } = require('../commands/autoBot.js')
 const { gassen } = require('../commands/gassen/gassen.js')
 const { help } = require('../commands/help/help.js')
+const { shop } = require('../commands/shop/shop.js');
+const { items } = require('../items/items.js');
 const prefix = process.env.PREFIX;
 const adminList = process.env.ADMIN_LIST;
 require('dotenv').config();
@@ -43,6 +45,8 @@ module.exports = {
             message.channel.send(`${binToHex(args[0])}`)
         } else if (command === 'hextob') {
             message.channel.send(`${hexToBin(args[0], 10)}`)
+        } else if (command === 'shop') {
+            await shop(message, items)
         } else if (command === 'reverse') {
             message.channel.send(`${reverseBinary(args[0])}`)
         } else if (command === 'battle') {

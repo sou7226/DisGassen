@@ -1,3 +1,4 @@
+
 function getGassenPlayerInfo(){
     let playerHandSigns;
     let botHandSigns;
@@ -18,8 +19,6 @@ function getGassenPlayerInfo(){
         botHandSigns: botHandSigns
     };
 }
-
-
 module.exports = {
     getGassenPlayerInfo: getGassenPlayerInfo
 }

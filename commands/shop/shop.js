@@ -1,7 +1,5 @@
 
-const { PrismaClient } = require('@prisma/client');
 const { AttachmentBuilder, EmbedBuilder } = require('discord.js')
-const prisma = new PrismaClient();
 const path = require('path');
 async function shop(message, items) {
     const userAvatarURL = message.author.avatarURL();

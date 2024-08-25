@@ -12,6 +12,7 @@ const { gassen } = require('../commands/gassen/gassen.js')
 const { help } = require('../commands/help/help.js')
 const { shop } = require('../commands/shop/shop.js');
 const { buy } = require('../commands/shop/buy.js');
+const { dig } = require('../commands/dig.js');
 const { items } = require('../items/items.js');
 const prefix = process.env.PREFIX;
 const adminList = process.env.ADMIN_LIST;
@@ -63,14 +64,7 @@ module.exports = {
             const content = await Inventory(playerInfo);
             message.channel.send(content)
         } else if (command === 'dig') {
-            await prisma.terrain.create({
-                data: {
-                    user_id: message.author.id,
-                    x: playerInfo.x,
-                    y: playerInfo.y
-                }
-            })
-            message.channel.send("掘りました！");
+            await dig(message, playerInfo)
         } else if (command === 'map') {
             await map(message, mapInfo, playerInfo)
         } else if (command === 'gassen') {

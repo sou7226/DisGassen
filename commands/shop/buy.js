@@ -15,7 +15,6 @@ async function buy(message, items, number) {
             totalPrice = coin - items[i].value
         }
     }
-    console.log(totalPrice)
     if (totalPrice < 0) {
         return message.channel.send('あらら、お金が足りないみたい..');
     }

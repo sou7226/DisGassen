@@ -14,7 +14,7 @@ async function map(message, mapInfo, playerInfo) {
     const mapMessage = await message.channel.send({ files: [mapAttachment] });
     while (true) {
         try {
-            const collected = await message.channel 
+            const collected = await message.channel
                 .awaitMessages({
                     filter: (m) => message.author.id === m.author.id, //messageはコマンド送信者のみに限定
                     max: 1, //messageの数は一つまで
@@ -67,6 +67,7 @@ async function map(message, mapInfo, playerInfo) {
                 }
             }
         } catch (error) {
+            console.log(error)
             return message.channel.send('時間切れです。');
         }
     }

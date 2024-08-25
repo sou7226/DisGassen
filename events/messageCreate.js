@@ -11,6 +11,7 @@ const { autoBot } = require('../commands/autoBot.js')
 const { gassen } = require('../commands/gassen/gassen.js')
 const { help } = require('../commands/help/help.js')
 const { shop } = require('../commands/shop/shop.js');
+const { buy } = require('../commands/shop/buy.js');
 const { items } = require('../items/items.js');
 const prefix = process.env.PREFIX;
 const adminList = process.env.ADMIN_LIST;
@@ -21,24 +22,24 @@ module.exports = {
     name: 'messageCreate',
     async execute(message, client, mapInfo, monsterInfo, friend, playerInfo) {
         if (message.author.bot) return;
-        const user = await prisma.user.findUnique({
-            where: { id: message.author.id },
+        const user = await prisma.user.findFirst({
+            where: { user_id: message.author.id },
         })
         if (user) {
             await prisma.user.update({
-                where: { id: message.author.id },
+                where: { user_id: message.author.id },
                 data: { coin: user.coin + 1 }
             })
         } else {
             await prisma.user.create({
-                data: { id: message.author.id }
+                data: { user_id: message.author.id }
             })
         }
         if (!message.content.startsWith(prefix)) return;
 
         const args = message.content.slice(prefix.length).trim().split(/ +/);
         const command = args.shift().toLowerCase();
-        if (command == 'help'){
+        if (command == 'help') {
             help(message, args)
         }
         if (command === 'btohex') {
@@ -47,6 +48,8 @@ module.exports = {
             message.channel.send(`${hexToBin(args[0], 10)}`)
         } else if (command === 'shop') {
             await shop(message, items)
+        } else if (command === 'buy') {
+            await buy(message, items, args[0])
         } else if (command === 'reverse') {
             message.channel.send(`${reverseBinary(args[0])}`)
         } else if (command === 'battle') {

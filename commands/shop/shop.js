@@ -10,14 +10,14 @@ async function shop(message, items) {
     const attachment = new AttachmentBuilder(buildingPath, { name: "shop.png" });
     let lists = []
     for (let i = 0; i < items.length; i++) {
-        lists.push({ name: `\`${items[i].item_id}.\`${items[i].name}`, value: items[i].effect, inline: true })
+        lists.push({ name: `\`${items[i].item_id}.\`${items[i].name}`, value: `\`￥${items[i].value}\`\n${items[i].effect}`, inline: true })
     }
     const embed = new EmbedBuilder()
         .setColor(0x0099FF)
         .setTitle(`アイテムショップ`)
         .setThumbnail(`attachment://${attachment.name}`)
         .setAuthor({ name: message.author.username, iconURL: userAvatarURL })
-        .setDescription(`いらっしゃい～！見ていってね！`)
+        .setDescription(`いらっしゃい～！見ていってね！\n\`wwbuy {itemNumber}\`: アイテムを買う`)
         .setTimestamp(currentTime)
         .setFooter({ text: `Current time: ${currentTime.toLocaleTimeString()}` })
         .addFields(lists)

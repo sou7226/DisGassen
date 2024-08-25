@@ -13,7 +13,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 model user {
-  id    String   @id
+  id Int @id @default(autoincrement())
+  user_id String @unique
   coin  Int      @default(0)
   exp   Int      @default(0)
   layer Int      @default(1)

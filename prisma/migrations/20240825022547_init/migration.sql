@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE `user` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `user_id` VARCHAR(191) NOT NULL,
     `coin` INTEGER NOT NULL DEFAULT 0,
     `exp` INTEGER NOT NULL DEFAULT 0,
     `layer` INTEGER NOT NULL DEFAULT 1,

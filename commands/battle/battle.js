@@ -19,11 +19,11 @@ async function battle(message, playerInfo, monsterInfo) {
         monsterInfo.power = null
         monsterInfo.speed = null
         const user = await prisma.user.findUnique({
-            where: { id: message.author.id },
+            where: { user_id: message.author.id },
         })
         if (user) {
             await prisma.user.update({
-                where: { id: message.author.id },
+                where: { user_id: message.author.id },
                 data: {
                     exp: user.exp + monsterInfo.level,
                     monstersDefeated: user.monstersDefeated + 1
@@ -32,7 +32,7 @@ async function battle(message, playerInfo, monsterInfo) {
         } else {
             await prisma.user.create({
                 data: {
-                    id: message.author.id,
+                    user_id: message.author.id,
                     exp: monsterInfo.level,
                     monstersDefeated: 1
                 }

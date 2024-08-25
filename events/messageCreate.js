@@ -64,7 +64,7 @@ module.exports = {
             const content = await Inventory(playerInfo);
             message.channel.send(content)
         } else if (command === 'dig') {
-            await dig(message, playerInfo)
+            await dig(message)
         } else if (command === 'map') {
             await map(message, mapInfo, playerInfo)
         } else if (command === 'gassen') {

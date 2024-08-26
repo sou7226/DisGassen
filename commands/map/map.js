@@ -1,6 +1,7 @@
 const { generateMap } = require('./generateMap/generateMap.js');
 const { updateCoords } = require('./db/updateCoords.js')
 const { isObjectAtDestination } = require('./utils/isObjectAtDestination.js')
+const { isMonsterAtDestination } = require('./utils/isMonsterAtDestination.js')
 require('dotenv').config();
 const upMessage = ["u", "up", "↑", "上", "うえ", "ue", "う"];
 const rightMessage = ["r", "right", "→", "右", "みぎ", "migi", "み"];
@@ -31,6 +32,7 @@ async function map(message, mapInfo, playerInfo) {
                 if (playerInfo.y - 1 >= 0) { //yが0以上の場合(マップからはみ出さない場合)
                     playerInfo.y--;
                     playerInfo = await updateCoords(playerInfo)
+                    isMonsterAtDestination(message)
                     isObjectAtDestination(message)
                     mapAttachment = await generateMap(mapInfo, playerInfo);
                     mapMessage.edit({ files: [mapAttachment] })
@@ -42,6 +44,7 @@ async function map(message, mapInfo, playerInfo) {
                 if (playerInfo.y + 1 <= mapHeight) { //yが9以下の場合(マップからはみ出さない場合)
                     playerInfo.y++;
                     playerInfo = await updateCoords(playerInfo)
+                    isMonsterAtDestination(message)
                     isObjectAtDestination(message)
                     mapAttachment = await generateMap(mapInfo, playerInfo);
                     mapMessage.edit({ files: [mapAttachment] })
@@ -53,6 +56,7 @@ async function map(message, mapInfo, playerInfo) {
                 if (playerInfo.x - 1 >= 0) {
                     playerInfo.x--;
                     playerInfo = await updateCoords(playerInfo)
+                    isMonsterAtDestination(message)
                     isObjectAtDestination(message)
                     mapAttachment = await generateMap(mapInfo, playerInfo);
                     mapMessage.edit({ files: [mapAttachment] })
@@ -64,6 +68,7 @@ async function map(message, mapInfo, playerInfo) {
                 if (playerInfo.x + 1 <= mapWidth) {
                     playerInfo.x++;
                     playerInfo = await updateCoords(playerInfo)
+                    isMonsterAtDestination(message)
                     isObjectAtDestination(message)
                     mapAttachment = await generateMap(mapInfo, playerInfo);
                     mapMessage.edit({ files: [mapAttachment] })
@@ -72,6 +77,7 @@ async function map(message, mapInfo, playerInfo) {
                 }
             }
         } catch (error) {
+            console.log(error)
             return message.channel.send('時間切れです。');
         }
     }

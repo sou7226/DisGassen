@@ -3,7 +3,10 @@ require('dotenv').config();
 const prisma = new PrismaClient();
 async function placeBuilding(ctx, shopImage, playerInfo, mapInfo) {
     const building = await prisma.building.findMany({
-        where: { user_id: playerInfo.id },
+        where: {
+            user_id: playerInfo.id,
+            building_id: 1
+        },
     })
     if (building.length === 0) {
         const availablePositions = [];

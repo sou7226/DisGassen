@@ -9,8 +9,8 @@ async function placeEntrance(ctx, entranceImage, playerInfo, mapInfo) {
     })
     if (building.length === 0) {
         const availablePositions = [];
-        for (let x = 0; x < 9; x++) {
-            for (let y = 0; y < 14; y++) {
+        for (let y = 0; y < 15; y++) {
+            for (let x = 0; x < 10; x++) {
                 availablePositions.push({ x, y });
             }
         }

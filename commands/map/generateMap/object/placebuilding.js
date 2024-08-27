@@ -10,8 +10,8 @@ async function placeBuilding(ctx, shopImage, playerInfo, mapInfo) {
     })
     if (building.length === 0) {
         const availablePositions = [];
-        for (let x = 0; x < 10; x++) {
-            for (let y = 0; y < 15; y++) {
+        for (let x = 0; x < 15; x++) {
+            for (let y = 0; y < 10; y++) {
                 availablePositions.push({ x, y });
             }
         }

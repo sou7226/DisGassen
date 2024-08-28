@@ -44,4 +44,4 @@ async function battle(message, playerInfo, monsterInfo) {
 }
 module.exports = {
     battle: battle
-}
+} 

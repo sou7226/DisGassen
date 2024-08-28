@@ -8,7 +8,7 @@ function help(message, args){
              //   { name: '\u200B', value: '\u200B' },
                 { name: '`::help`', value: 'コマンド名と使い方を確認！'},
                 { name: '`::map`', value: 'テラリアをプレイ！\n現在の位置を見ることができます'},
-                { name: '`::battle`', value: '敵を攻撃します！'},
+                { name: '`::atk`', value: '敵を攻撃します！'},
                 { name: '`::pinfo`', value: 'プレイヤーの情報を表示！'},
                 { name: '`::btohex`', value: '10進数を16進数に変換します'},
                 { name: '`::hextob`', value: '16進数を10進数に変換します！'},

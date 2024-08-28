@@ -22,7 +22,7 @@ model user {
   y     Int      @default(0)
   monstersDefeated Int    @default(0)
 }
-model playerItem {
+model item {
   id Int @id @default(autoincrement())
   user_id        String
   item_id        Int
@@ -52,4 +52,9 @@ model building{
   x Int
   y Int
 }
-
+model equipment{
+  id Int @id @default(autoincrement())
+  user_id String
+  equip_id Int
+  level Int @default(1)
+}

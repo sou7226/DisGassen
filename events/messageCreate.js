@@ -5,14 +5,15 @@ const { reverseBinary } = require('../commands/calc/reverseBinary.js');
 const { battle } = require('../commands/battle/battle.js')
 const { map } = require('../commands/map/map.js')
 const { playerStatus } = require('../commands/playerStatus.js')
-const { give } = require('../commands/admin/giveItem/give.js')
-const { Inventory } = require('../commands/Inventory.js')
+const { inventory } = require('../commands/inventory/inventory.js')
 const { autoBot } = require('../commands/autoBot.js')
 const { gassen } = require('../commands/gassen/gassen.js')
 const { help } = require('../commands/help/help.js')
 const { shop } = require('../commands/shop/shop.js');
 const { buy } = require('../commands/shop/buy.js');
 const { dig } = require('../commands/map/dig.js');
+const { give } = require('../commands/admin/giveItem/give.js')
+const { addEquipment } = require('../commands/admin/addEquipment/addEquipment.js')
 const { items } = require('../items/items.js');
 const prefix = process.env.PREFIX;
 const adminList = process.env.ADMIN_LIST;
@@ -61,7 +62,7 @@ module.exports = {
             await autoBot(message, playerInfo);
         } else if (command === 'inv') {
             playerInfo.id = message.author.id
-            const content = await Inventory(playerInfo);
+            const content = await inventory(playerInfo);
             message.channel.send(content)
         } else if (command === 'dig') {
             await dig(message)
@@ -74,7 +75,11 @@ module.exports = {
             if (command === "give") {
                 playerInfo.id = message.author.id
                 content = await give(playerInfo, args)
+            }else if(command === 'addep'){
+                addEquipment(message, args[0], Number(args[1]), args[2] !== undefined? args[2]: undefined)
             }
+            
         }
+        
     },
 };

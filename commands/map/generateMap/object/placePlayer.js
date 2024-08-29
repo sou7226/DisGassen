@@ -3,7 +3,10 @@ require('dotenv').config();
 const prisma = new PrismaClient();
 async function placePlayer(ctx, playerImage, playerInfo, mapInfo) {
     const user = await prisma.user.findUnique({
-        where: { user_id: playerInfo.id },
+        where: { 
+            user_id: playerInfo.id,
+            layer: playerInfo.layer
+        },
     })
     if (user) {
         playerInfo.x = user.x;

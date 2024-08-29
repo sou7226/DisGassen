@@ -5,6 +5,7 @@ async function placeBuilding(ctx, shopImage, playerInfo, mapInfo) {
     const building = await prisma.building.findMany({
         where: {
             user_id: playerInfo.id,
+            layer: playerInfo.layer,
             building_id: 1
         },
     })
@@ -22,6 +23,7 @@ async function placeBuilding(ctx, shopImage, playerInfo, mapInfo) {
             await prisma.building.create({
                 data: {
                     user_id: playerInfo.id,
+                    layer: playerInfo.layer,
                     building_id : 1,
                     x: x,
                     y: y

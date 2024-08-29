@@ -3,6 +3,7 @@ let mapInfo = {
     Height: 200,
     tilePath: './img/tiles/rock_tile1.png',
     grassTilePath: './img/tiles/grass_tile.png',
+    purpleGrassTilePath: './img/tiles/purple_grass_tile.png',
     hallPath: './img/tiles/black.png',
     redPinPath: './img/red_pin.png',
     shopPath: './img/buildings/shop.png',

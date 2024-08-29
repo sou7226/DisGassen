@@ -4,6 +4,7 @@ async function placeEntrance(ctx, entranceImage, playerInfo, mapInfo) {
     const building = await prisma.building.findMany({
         where: {
             user_id: playerInfo.id,
+            layer: playerInfo.layer,
             building_id: 2
         },
     })
@@ -20,6 +21,7 @@ async function placeEntrance(ctx, entranceImage, playerInfo, mapInfo) {
         await prisma.building.create({
             data: {
                 user_id: playerInfo.id,
+                layer: playerInfo.layer,
                 building_id: 2,
                 x: x,
                 y: y

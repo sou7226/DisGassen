@@ -18,6 +18,7 @@ async function generateMap(mapInfo, playerInfo) {
     const shopImage = await loadImage(mapInfo.shopPath);
     const entranceImage = await loadImage(mapInfo.entrancePath);
     let ctx = canvas.getContext('2d');
+
     ctx = placeGrass(ctx, grassTileImage, mapInfo)
     ctx = await placeHall(ctx, hallImage, playerInfo, mapInfo)
     ctx = await placeMonster(ctx, tileImage, playerInfo, mapInfo)

@@ -13,6 +13,7 @@ async function map(message, mapInfo, playerInfo) {
     const mapWidth = 14;
     const mapHeight = 9;
     let mapAttachment = await generateMap(mapInfo, playerInfo);
+    message.channel.send("```\n上移動: \"u\", \"up\", \"上\", \"うえ\"\n右移動: \"r\", \"right\", \"右\", \"みぎ\"\n左移動: \"l\", \"left\", \"左\", \"ひだり\"\n下移動: \"d\", \"down\", \"下\", \"した\"\n0と発言 or 30秒経過で終了```")
     const mapMessage = await message.channel.send({ files: [mapAttachment] });
     while (true) {
         try {

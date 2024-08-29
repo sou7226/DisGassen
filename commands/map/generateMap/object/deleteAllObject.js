@@ -4,13 +4,15 @@ async function deleteAllObject(ctx, tileImage, playerInfo, mapInfo)  {
     await prisma.building.deleteMany({
       where: {
         user_id: playerInfo.id,
+        layer: playerInfo.layer,
         x: 6,
         y: 0
       },
     });
     await prisma.monster.deleteMany({
         where: {
-        user_id: playerInfo.id,
+          user_id: playerInfo.id,
+          layer: playerInfo.layer,
           x: 6,
           y: 0
         },

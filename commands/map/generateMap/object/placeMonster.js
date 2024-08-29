@@ -3,7 +3,10 @@ require('dotenv').config();
 const prisma = new PrismaClient();
 async function placeMonster(ctx, tileImage, playerInfo, mapInfo) {
     const monster = await prisma.monster.findMany({
-        where: { user_id: playerInfo.id },
+        where: { 
+            user_id: playerInfo.id,
+            layer: playerInfo.layer
+        },
     })
     if (monster.length === 0) {
         const availablePositions = [];

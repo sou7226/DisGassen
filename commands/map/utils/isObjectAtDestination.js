@@ -12,7 +12,39 @@ const playerInfo = await prisma.user.findFirst({
  })
  for(let i = 0; i < building.length; i++){
     if (building[i].x === playerInfo.x && building[i].y === playerInfo.y) {
-        return message.channel.send("ここに建造物があります！");
+        if (building[i].building_id === 1){
+            return message.channel.send("ここにショップがあります！");
+        } else if (building[i].building_id === 2){
+            message.channel.send("さらなる地下へと続いているようだ...中に入りますか？\n`yes`/`no`と発言")
+            try{
+                const collected = await message.channel
+                .awaitMessages({
+                    filter: (m) => message.author.id === m.author.id, //messageはコマンド送信者のみに限定
+                    max: 1, //messageの数は一つまで
+                    time: 30_000, //時間は30秒
+                    errors: ['time'] //時間超過したらエラーを発生
+                });
+                const responseMessage = collected.first();
+                if (responseMessage.content === "yes") { 
+                    await prisma.user.update({
+                        where: { 
+                            user_id: playerInfo.id,
+                            layer: playerInfo.layer + 1
+                            },
+                        data: {
+                            x: 6,
+                            y: 0
+                        }
+                    })
+                }
+                else return message.channel.send('終了します。');   
+            }catch (error) {
+                console.log(error)
+                return message.channel.send('時間切れです。');
+            }
+
+            return
+        }
     }
  }
 }

@@ -15,7 +15,7 @@ const playerInfo = await prisma.user.findFirst({
         if (building[i].building_id === 1){
             return message.channel.send("ここにショップがあります！");
         } else if (building[i].building_id === 2){
-            message.channel.send("さらなる地下へと続いているようだ...中に入りますか？\n`yes`/`no`と発言")
+            message.channel.send("```\nさらなる地下へと続いているようだ...\n中に入りますか？\nyes/noと発言\n```")
             try{
                 const collected = await message.channel
                 .awaitMessages({
@@ -28,14 +28,15 @@ const playerInfo = await prisma.user.findFirst({
                 if (responseMessage.content === "yes") { 
                     await prisma.user.update({
                         where: { 
-                            user_id: playerInfo.id,
-                            layer: playerInfo.layer + 1
+                            user_id: `${message.author.id}`,
                             },
                         data: {
+                            layer: playerInfo.layer + 1,
                             x: 6,
                             y: 0
                         }
                     })
+                    return message.channel.send(`${playerInfo.layer + 1}階層へ進みました！`)
                 }
                 else return message.channel.send('終了します。');   
             }catch (error) {

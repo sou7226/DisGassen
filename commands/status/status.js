@@ -1,4 +1,4 @@
-async function playerStatus(prisma, message) {
+async function status(prisma, message) {
     const user = await prisma.user.findUnique({
         where: { user_id: message.author.id },
     })
@@ -12,5 +12,5 @@ async function playerStatus(prisma, message) {
     }
 }
 module.exports = {
-    playerStatus: playerStatus
+    status: status
 }

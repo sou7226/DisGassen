@@ -1,6 +1,6 @@
 # Dockerfile
 FROM node:16
-WORKDIR C:\Users\gmtn9\OneDrive/ドキュメント/GitHub/DisGassen
+WORKDIR C:\Users\gmtn9\Documents\GitHub\DisGassen
 COPY package*.json ./
 RUN npm install
 RUN apt-get update && apt-get install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++

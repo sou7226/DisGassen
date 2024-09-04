@@ -4,9 +4,9 @@ const { hexToBin } = require('../commands/calc/hexToBin.js');
 const { reverseBinary } = require('../commands/calc/reverseBinary.js');
 const { battle } = require('../commands/battle/battle.js')
 const { map } = require('../commands/map/map.js')
-const { playerStatus } = require('../commands/playerStatus.js')
+const { status } = require('../commands/status/status.js')
 const { inventory } = require('../commands/inventory/inventory.js')
-const { autoBot } = require('../commands/autoBot.js')
+const { autoBot } = require('../commands/autoBot/autoBot.js')
 const { gassen } = require('../commands/gassen/gassen.js')
 const { help } = require('../commands/help/help.js')
 const { shop } = require('../commands/shop/shop.js');
@@ -56,8 +56,8 @@ module.exports = {
             message.channel.send(`${reverseBinary(args[0])}`)
         } else if (command === 'battle') {
             await battle(message, playerInfo, monsterInfo);
-        } else if (command === 'pinfo') {
-            await playerStatus(prisma, message);
+        } else if (command === 'st') {
+            await status(prisma, message);
         } else if (command === 'autob') {
             await autoBot(message, playerInfo);
         } else if (command === 'inv') {

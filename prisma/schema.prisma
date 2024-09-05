@@ -58,3 +58,10 @@ model equipment{
   equip_id Int
   level Int @default(1)
 }
+model gassen{
+  id Int @id @default(autoincrement())
+  user_id String
+  rock Int @default(34)
+  scissors Int @default(33)
+  paper Int @default(33)
+}

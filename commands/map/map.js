@@ -1,5 +1,5 @@
 const { generateMap } = require('./generateMap/generateMap.js');
-const { updateCoords } = require('./db/updateCoords.js')
+const { updateCoords } = require('./updateCoords.js')
 const { isObjectAtDestination } = require('./utils/isObjectAtDestination.js')
 const { isMonsterAtDestination } = require('./utils/isMonsterAtDestination.js')
 require('dotenv').config();
